@@ -1,111 +1,210 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta content='website' property='og:type'>
-  <meta content='Great Software Engineer Leader - Dan Kaplan' property='og:title'>
-  <meta content='Dan Kaplan is one of the best software engineering leaders' property='og:description'>
+  <meta content='Dan Kaplan - Software Engineering Leader' property='og:title'>
+  <meta content='Proven software engineering and product leader with 10 years of experience building apps, websites, platforms and teams.' property='og:description'>
+  <title>Dan Kaplan - Software Engineering Leader</title>
   <style type="text/css">
-    .index {
-      background-color: #F0F8FF
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      line-height: 1.6;
+      color: #2d3748;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
     }
 
     .container {
-      padding: 50px;
-      margin-left: 20%;
-      margin-right: 20%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 40px;
     }
 
-    .links {
-      margin: auto;
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 60px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
-    .links a {
-      padding-right: 20px;
+    header {
+      margin-bottom: 40px;
     }
 
-    @media (max-width: 1000px) {
-      .container {
-        margin-left: 20px;
-        margin-right: 20px;
-      }
+    h1 {
+      font-size: 2.5rem;
+      color: #1a202c;
+      margin-bottom: 20px;
+      font-weight: 700;
     }
 
-    ul {
+    .tagline {
+      font-size: 1.25rem;
+      color: #4a5568;
+      margin-bottom: 30px;
+      font-weight: 300;
+    }
+
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .social-links a {
+      text-decoration: none;
+      color: #667eea;
+      font-weight: 500;
+      padding: 8px 16px;
+      border: 2px solid #667eea;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .content section {
+      margin-bottom: 30px;
+    }
+
+    .content p {
+      margin-bottom: 20px;
+      color: #4a5568;
+      font-size: 1.05rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      color: #1a202c;
+      margin-bottom: 20px;
+      margin-top: 40px;
+      font-weight: 600;
+    }
+
+    .blog-list {
       list-style: none;
     }
 
-    li {
-      padding-bottom: 2px;
-      font-style: italic;
+    .blog-list li {
+      margin-bottom: 12px;
     }
 
-    a {
+    .blog-list a {
       text-decoration: none;
-      color: #8A2BE2;
+      color: #667eea;
+      font-size: 1.05rem;
+      transition: all 0.2s ease;
+      display: inline-block;
     }
 
-    a:hover {
-      text-decoration: underline;
-      text-decoration-color: black;
-    };
+    .blog-list a:hover {
+      color: #764ba2;
+      transform: translateX(5px);
+    }
+
+    .blog-list a::before {
+      content: "→ ";
+      margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      .card {
+        padding: 40px 30px;
+        border-radius: 8px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .tagline {
+        font-size: 1.1rem;
+      }
+
+      .social-links {
+        gap: 12px;
+      }
+
+      .social-links a {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+    }
   </style>
 </head>
 
-<body class="index">
+<body>
   <div class="container">
-    <h1>Hi, my name is Dan Kaplan.</h1>
+    <div class="card">
+      <header>
+        <h1>Dan Kaplan</h1>
+        <p class="tagline">Startup CTO | Founding Engineer | Engineering Leader</p>
 
-    <div class="links">
-      <a href="https://www.linkedin.com/in/dkaplan88/" target="blank">
-        <span>LinkedIn</span>
-      </a>
+        <div class="social-links">
+          <a href="https://www.linkedin.com/in/dkaplan88/" target="_blank">LinkedIn</a>
+          <a href="assets/Dan_Kaplan_Resume.pdf" download>Resume</a>
+          <a href="https://twitter.com/_dankaplan" target="_blank">Twitter</a>
+          <a href="https://github.com/dkaplan88" target="_blank">GitHub</a>
+          <a href="mailto:dskaplan88@gmail.com">Email</a>
+        </div>
+      </header>
 
-      <a href="assets/Dan_Kaplan_Resume.pdf" download>
-        <span>Resume</span>
-      </a>
+      <div class="content">
+        <section>
+          <p>I build winning teams and products. As a Startup CTO, I rebuilt entire platforms and drove a Series A raise. As the first engineering hire at PrizePicks and G2 Crowd, I built the foundations that scaled both companies to success. And at Fortune 500 companies like Home Chef (Kroger), I deliver results—driving 30% velocity increases, launching innovation initiatives, and achieving top scores for leadership. I get things done, whether I'm building from zero or optimizing at scale.</p>
 
+          <p>Currently, I'm an Engineering Manager at Home Chef, where I lead two teams with eight direct reports, fostering growth from early-career to senior levels. I've spearheaded productivity improvements that led to a 30% increase in velocity, launched initiatives like #Tech-Talk-Tuesdays, PR Roundtables, and the AI Working Group to explore and implement AI technology, and achieved top scores in organizational health surveys for Innovation, Leadership, Management, and Recognition.</p>
 
-      <a href="https://twitter.com/_dankaplan" target="blank">
-        <span>Twitter</span>
-      </a>
+          <p>Previously, I was CTO at Five to Nine, where I built and scaled an engineering team, led a complete product rebuild, and increased team velocity by 150% while driving the technical strategy for a successful Series A raise. Before that, I was an early contributor to successful startups including PrizePicks (first engineering hire) and G2 Crowd (#1 engineer).</p>
 
-      <a href="https://github.com/dkaplan88" target="blank">
-        <span>GitHub</span>
-      </a>
+          <p>I have deep expertise in Ruby on Rails, React, JavaScript, Postgres, AWS, and Heroku environments. I'm passionate about fostering team culture, process improvement, and building scalable, user-focused products that win.</p>
 
-      <a href="mailto:dskaplan88@gmail.com" target="blank">
-        <span>dskaplan88@gmail</span>
-      </a>
+          <p>In my free time, I'm an avid reader, golfer, world traveler, and am obsessed with anything Minions, Chicago Bulls, and Seinfeld.</p>
+        </section>
+
+        <section>
+          <h2>Blog</h2>
+          <ul class="blog-list">
+            <li><a href="blog/client-requests.html">Client Requests</a></li>
+            <li><a href="blog/learning-what-i-thrive-in.html">Learning What I Thrive In</a></li>
+            <li><a href="blog/no-free-book.html">No Free Book</a></li>
+            <li><a href="blog/passing-the-torch.html">Passing the Torch?</a></li>
+            <li><a href="blog/being-technical.html">Being Technical</a></li>
+            <li><a href="blog/lebron-for-vp.html">Lebron for VP</a></li>
+            <li><a href="blog/book-review-the-biggest-bluff.html">Book Review: The Biggest Bluff</a></li>
+            <li><a href="blog/open-source-lounge.html">Open Source Lounge Continues to Thrive</a></li>
+            <li><a href="blog/heartbeat-checking-our-pulse.html">Heartbeat - Checking our Pulse</a></li>
+            <li><a href="https://dkaplan88.medium.com/state-management-react-hooks-vs-redux-pros-and-cons-f22a669a2ca3" target="_blank">State Management: React Hooks vs Redux — Pros and Cons</a></li>
+            <li><a href="https://dkaplan88.medium.com/elastic-beanstalk-git-eb-extensions-a3b7664513ae" target="_blank">Elastic Beanstalk & Git</a></li>
+            <li><a href="https://dkaplan88.medium.com/devils-advocate-code-reviews-e3e1db6fdd10" target="_blank">Devil's Advocate Code Reviews</a></li>
+            <li><a href="https://dkaplan88.medium.com/active-model-serializer-custom-with-pagy-pagination-a76a4e8332f0" target="_blank">Active Model Serializers - a custom serializer with pagination</a></li>
+            <li><a href="https://dkaplan88.medium.com/feb-29th-should-be-nationaltechdebtday-a9202bc1332d" target="_blank">Feb 29th should be #NationalTechDebtDay</a></li>
+            <li><a href="https://dkaplan88.medium.com/how-are-you-how-s-it-going-48f0c10734ea" target="_blank">"How are you? How's it going?"</a></li>
+            <li><a href="https://dkaplan88.medium.com/the-mortality-paradox-and-optimizing-for-death-bbb92d6e895a" target="_blank">The Mortality Paradox, and Optimizing for Death</a></li>
+          </ul>
+        </section>
+      </div>
     </div>
-
-    <p>I am a proven software engineering and product leader with 10 years of experience building apps, websites, platforms and teams at early-stage startups to Fortune 100 companies.</p>
-
-    <p>I can be the technical partner you need to get your startup off the ground. I can be the one to transform and build out an engineering team. I can be the 10x developer to quickly take your product to the next level.</p>
-
-    <p>I have deep experience in Ruby on Rails / React / Javascript / Postgres / AWS / Heroku environments.</p>
-
-    <p>Right now, I am the CTO at Five to Nine - our software helps organizations build out impactful employee event programs. I have helped us rebuild our entire platform, and our entire engineering team. Learn more about <a href="http://fivetonine.co/" target="blank">Five to Nine</a>.</p>
-
-    <p>In my free time, I’m an avid reader, golfer, world traveler, and am obsessed with anything Minions, Chicago Bulls, and Seinfeld.</p>
-
-    <h3>My Blog</h3>
-    <ul>
-      <li><a href="https://dkaplan88.medium.com/state-management-react-hooks-vs-redux-pros-and-cons-f22a669a2ca3" target="blank">- State Management: React Hooks vs Redux — Pros and Cons</li>
-      <li><a href="https://dkaplan88.medium.com/elastic-beanstalk-git-eb-extensions-a3b7664513ae" target="blank">- Elastic Beanstalk & Git</li>
-      <li><a href="https://dkaplan88.medium.com/devils-advocate-code-reviews-e3e1db6fdd10" target="blank">- Devil’s Advocate Code Reviews</li>
-      <li><a href="https://dkaplan88.medium.com/active-model-serializer-custom-with-pagy-pagination-a76a4e8332f0", target="blank">- Active Model Serializers - a custom serializer with pagination</a></li>
-      <li><a href="https://dankaplan.substack.com/p/client-requests", target="blank">- Client Requests</a></li>
-      <li><a href="https://dankaplan.substack.com/p/learning-what-i-thrive-in", target="blank">- Learning What I Thrive In</a></li>
-      <li><a href="https://dankaplan.substack.com/p/no-free-book" target="blank">- No Free Book</a></li>
-      <li><a href="https://dankaplan.substack.com/p/passing-the-torch" target="blank">- Passing the Torch?</a></li>
-      <li><a href="https://dankaplan.substack.com/p/being-technical" target="blank">- Being Technical</a></li>
-      <li><a href="https://dankaplan.substack.com/p/lebron-for-vp" target="blank">- Lebron for VP</a></li>
-      <li><a href="https://dankaplan.substack.com/p/book-review-the-biggest-bluff" target="blank">- Book Review: The Biggest Bluff</a></li>
-      <li><a href="https://dkaplan88.medium.com/feb-29th-should-be-nationaltechdebtday-a9202bc1332d" target="blank">- Feb 29th should be #NationalTechDebtDay</a></li>
-      <li><a href="https://dkaplan88.medium.com/how-are-you-how-s-it-going-48f0c10734ea" target="blank">- “How are you? How’s it going?”</a></li>
-      <li><a href="https://dkaplan88.medium.com/the-mortality-paradox-and-optimizing-for-death-bbb92d6e895a" target="blank">- The Mortality Paradox, and Optimizing for Death</a></li>
-      <li><a href="https://www.enova.com/blog/open-source-lounge-continues-to-thrive/" target="blank"> - Open Source Lounge Continues to Thrive</a></li>
-      <li><a href="https://www.enova.com/blog/heartbeat-checking-our-pulse/" target="blank">- Heartbeat - Checking our Pulse</a></li>
-    </ul>
   </div>
 </body>
 </html>
