@@ -4,213 +4,1160 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta content='website' property='og:type'>
-  <meta content='Dan Kaplan - Software Engineering Leader' property='og:title'>
-  <meta content='Proven software engineering and product leader with 10 years of experience building apps, websites, platforms and teams.' property='og:description'>
-  <title>Dan Kaplan - Software Engineering Leader</title>
-  <style type="text/css">
+  <meta content='Dan Kaplan - Technology Leader' property='og:title'>
+  <meta content='Technology leader with 13+ years building teams and shipping scalable, high-impact products. From founding engineer to CTO to Engineering Manager.' property='og:description'>
+  <title>Dan Kaplan - Technology Leader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       line-height: 1.6;
-      color: #2d3748;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
+      color: #1a1a2e;
+      background: #fafafa;
     }
 
-    .container {
-      max-width: 900px;
+    /* ── Navigation ── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 60px 40px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 60px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-
-    header {
-      margin-bottom: 40px;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      color: #1a202c;
-      margin-bottom: 20px;
-      font-weight: 700;
-    }
-
-    .tagline {
-      font-size: 1.25rem;
-      color: #4a5568;
-      margin-bottom: 30px;
-      font-weight: 300;
-    }
-
-    .social-links {
+      padding: 16px 40px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-bottom: 40px;
-      padding-bottom: 40px;
-      border-bottom: 2px solid #e2e8f0;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .social-links a {
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #1a1a2e;
       text-decoration: none;
-      color: #667eea;
-      font-weight: 500;
-      padding: 8px 16px;
-      border: 2px solid #667eea;
-      border-radius: 6px;
-      transition: all 0.3s ease;
+      letter-spacing: -0.02em;
     }
 
-    .social-links a:hover {
-      background: #667eea;
-      color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-
-    .content section {
-      margin-bottom: 30px;
-    }
-
-    .content p {
-      margin-bottom: 20px;
-      color: #4a5568;
-      font-size: 1.05rem;
-    }
-
-    h2 {
-      font-size: 1.75rem;
-      color: #1a202c;
-      margin-bottom: 20px;
-      margin-top: 40px;
-      font-weight: 600;
-    }
-
-    .blog-list {
+    .nav-links {
+      display: flex;
+      gap: 32px;
       list-style: none;
     }
 
-    .blog-list li {
+    .nav-links a {
+      text-decoration: none;
+      color: #64648c;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #1a1a2e;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 40px 80px;
+      background: linear-gradient(160deg, #0f0c29 0%, #1a1a2e 40%, #24243e 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 80px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-content h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .hero-location {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 24px;
+      font-weight: 400;
+    }
+
+    .hero-tagline {
+      font-size: 1.5rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 300;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.5);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 560px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: #6366f1;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .hero-photo {
+      width: 400px;
+      height: 480px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      background: #fff;
+      border-bottom: 1px solid #eee;
+    }
+
+    .stats-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 40px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      text-align: center;
+    }
+
+    .stat h3 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #6366f1;
+      letter-spacing: -0.03em;
+    }
+
+    .stat p {
+      font-size: 0.85rem;
+      color: #64648c;
+      font-weight: 500;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Logo Bar ── */
+    .logo-bar {
+      background: #f5f5f7;
+      border-bottom: 1px solid #eee;
+    }
+
+    .logo-bar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 40px;
+      text-align: center;
+    }
+
+    .logo-bar-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9999b3;
+      font-weight: 600;
+      margin-bottom: 32px;
+    }
+
+    .logo-grid {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .logo-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+      filter: grayscale(100%);
+    }
+
+    .logo-item:hover {
+      opacity: 1;
+      filter: grayscale(0%);
+    }
+
+    .logo-item img {
+      max-height: 40px;
+      max-width: 120px;
+      object-fit: contain;
+    }
+
+    .logo-placeholder {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    /* ── Sections ── */
+    .section {
+      padding: 100px 40px;
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #6366f1;
+      font-weight: 600;
       margin-bottom: 12px;
     }
 
-    .blog-list a {
-      text-decoration: none;
-      color: #667eea;
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #1a1a2e;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: #64648c;
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 56px;
+    }
+
+    /* ── About ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: #4a4a6a;
       font-size: 1.05rem;
-      transition: all 0.2s ease;
-      display: inline-block;
+      line-height: 1.8;
+      margin-bottom: 20px;
     }
 
-    .blog-list a:hover {
-      color: #764ba2;
-      transform: translateX(5px);
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
-    .blog-list a::before {
-      content: "→ ";
-      margin-right: 8px;
+    .skill-tag {
+      padding: 10px 16px;
+      background: #f0f0ff;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #4a4a6a;
+      text-align: center;
     }
 
-    .blog-date {
-      color: #718096;
+    /* ── Experience ── */
+    .bg-white {
+      background: #fff;
+    }
+
+    .experience-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .exp-card {
+      padding: 40px;
+      border-radius: 16px;
+      border: 1px solid #eee;
+      transition: all 0.3s;
+      background: #fafafa;
+    }
+
+    .exp-card:hover {
+      border-color: #ddd;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      transform: translateY(-4px);
+    }
+
+    .exp-card.featured {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #1a1a2e 0%, #24243e 100%);
+      border: none;
+    }
+
+    .exp-card.featured .exp-company,
+    .exp-card.featured .exp-role,
+    .exp-card.featured .exp-desc {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .exp-card.featured .exp-dates {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .exp-card.featured .exp-highlight {
+      background: rgba(99, 102, 241, 0.2);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .exp-company {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6366f1;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .exp-role {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .exp-dates {
+      font-size: 0.85rem;
+      color: #9999b3;
+      margin-bottom: 16px;
+    }
+
+    .exp-desc {
+      font-size: 0.95rem;
+      color: #4a4a6a;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .exp-highlights {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .exp-highlight {
+      padding: 6px 12px;
+      background: #f0f0ff;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #4a4a6a;
+    }
+
+    /* ── Projects ── */
+    .project-card {
+      padding: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f0f0ff 0%, #e8e8ff 100%);
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .project-info h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .project-info p {
+      color: #4a4a6a;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .project-tech {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .project-tech span {
+      padding: 6px 12px;
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #6366f1;
+    }
+
+    .project-card + .project-card {
+      margin-top: 32px;
+    }
+
+    .project-preview {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      max-height: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f7;
+    }
+
+    .project-preview img {
+      width: 100%;
+      height: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ── Blog ── */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .blog-card {
+      padding: 32px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      background: #fff;
+      text-decoration: none;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .blog-card:hover {
+      border-color: #ddd;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+      transform: translateY(-4px);
+    }
+
+    .blog-card .blog-date {
+      font-size: 0.8rem;
+      color: #9999b3;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .blog-card .blog-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1a1a2e;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      flex-grow: 1;
+    }
+
+    .blog-card .blog-arrow {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #6366f1;
+      font-weight: 500;
+    }
+
+    .blog-show-more {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .blog-show-more button {
+      padding: 12px 32px;
+      background: transparent;
+      border: 1px solid #ddd;
+      border-radius: 8px;
       font-size: 0.9rem;
-      margin-left: 8px;
+      font-weight: 500;
+      color: #4a4a6a;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
     }
 
-    @media (max-width: 768px) {
-      .container {
-        padding: 30px 20px;
+    .blog-show-more button:hover {
+      border-color: #6366f1;
+      color: #6366f1;
+    }
+
+    .blog-card.hidden {
+      display: none;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #1a1a2e;
+      padding: 64px 40px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-left h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .footer-left p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.95rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #fff;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 968px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
       }
 
-      .card {
-        padding: 40px 30px;
-        border-radius: 8px;
+      .hero-photo {
+        width: 100%;
+        height: 360px;
+        order: -1;
       }
 
-      h1 {
+      .hero-content h1 {
+        font-size: 3rem;
+      }
+
+      .stats-inner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .experience-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project-card {
+        grid-template-columns: 1fr;
+      }
+
+      .blog-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 100px 24px 60px;
+      }
+
+      .hero-content h1 {
+        font-size: 2.4rem;
+      }
+
+      .hero-tagline {
+        font-size: 1.2rem;
+      }
+
+      .section {
+        padding: 64px 24px;
+      }
+
+      .section-title {
         font-size: 2rem;
       }
 
-      .tagline {
-        font-size: 1.1rem;
+      .stats-inner {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        padding: 32px 24px;
       }
 
-      .social-links {
-        gap: 12px;
+      .stat h3 {
+        font-size: 2rem;
       }
 
-      .social-links a {
-        font-size: 0.9rem;
-        padding: 6px 12px;
+      .logo-grid {
+        gap: 32px;
       }
+
+      .blog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 32px;
+        text-align: center;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .hero-ctas {
+        flex-direction: column;
+      }
+
+      .btn-primary, .btn-secondary {
+        text-align: center;
+        justify-content: center;
+      }
+
+      .exp-card {
+        padding: 28px;
+      }
+
+      .project-card {
+        padding: 28px;
+      }
+    }
+
+    /* ── Animations ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="card">
-      <header>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Dan Kaplan</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
         <h1>Dan Kaplan</h1>
-        <p class="tagline">Startup CTO | Founding Engineer | Engineering Leader</p>
-
-        <div class="social-links">
-          <a href="https://www.linkedin.com/in/dkaplan88/" target="_blank">LinkedIn</a>
-          <a href="assets/Dan_Kaplan_Resume.pdf" download>Resume</a>
-          <a href="https://twitter.com/_dankaplan" target="_blank">Twitter</a>
-          <a href="https://github.com/dkaplan88" target="_blank">GitHub</a>
-          <a href="mailto:dskaplan88@gmail.com">Email</a>
+        <p class="hero-location">Chicago, IL</p>
+        <p class="hero-tagline">I build winning teams and products.</p>
+        <p class="hero-sub">Technology leader with 13+ years of experience. From founding engineer at PrizePicks (now valued at $2.5B) to CTO leading a successful $4.25M fundraise, to Engineering Manager developing high-performing teams at scale.</p>
+        <div class="hero-ctas">
+          <a href="https://www.linkedin.com/in/dkaplan88/" target="_blank" class="btn-primary">Get in Touch</a>
+          <a href="assets/Dan_Kaplan_Resume.pdf" download class="btn-secondary">Download Resume</a>
         </div>
-      </header>
+      </div>
+      <div class="hero-photo">
+        <img src="assets/images/headshot.jpg" alt="Dan Kaplan">
+      </div>
+    </div>
+  </section>
 
-      <div class="content">
-        <section>
-          <p>I build winning teams and products. As a Startup CTO, I rebuilt entire platforms and drove a Series A raise. As the first engineering hire at PrizePicks and G2 Crowd, I built the foundations that scaled both companies to success.</p>
-
-          <p>Currently, I'm an Engineering Manager at Home Chef, where I lead two teams with eight direct reports, fostering growth from early-career to senior levels. I've spearheaded productivity improvements that led to a 30% increase in velocity, launched initiatives like #Tech-Talk-Tuesdays, PR Roundtables, and the AI Working Group to explore and implement AI technology, and achieved top scores in organizational health surveys for Innovation, Leadership, Management, and Recognition.</p>
-
-          <p>Previously, I was CTO at Five to Nine, where I built and scaled an engineering team, led a complete product rebuild, and increased team velocity by 150% while driving the technical strategy for a successful Series A raise. Before that, I was an early contributor to successful startups including PrizePicks and G2 Crowd.</p>
-
-          <p>I have deep expertise in Ruby on Rails, React, JavaScript, Postgres, AWS, and Heroku environments. I'm passionate about fostering team culture through psychological safety, process improvement through rapid agile practices, and building scalable, user-focused products that win.</p>
-
-          <p>In my free time, I'm an avid reader, golfer, world traveler, and am obsessed with anything Minions, Chicago Bulls, and Seinfeld.</p>
-        </section>
-
-        <section>
-          <h2>Blog</h2>
-          <ul class="blog-list">
-            <li><a href="https://dkaplan88.medium.com/state-management-react-hooks-vs-redux-pros-and-cons-f22a669a2ca3" target="_blank">State Management: React Hooks vs Redux — Pros and Cons</a><span class="blog-date">Jan 5, 2023</span></li>
-            <li><a href="https://dkaplan88.medium.com/elastic-beanstalk-git-eb-extensions-a3b7664513ae" target="_blank">Elastic Beanstalk & Git</a><span class="blog-date">Jul 23, 2021</span></li>
-            <li><a href="https://dkaplan88.medium.com/devils-advocate-code-reviews-e3e1db6fdd10" target="_blank">Devil's Advocate Code Reviews</a><span class="blog-date">May 4, 2021</span></li>
-            <li><a href="https://dkaplan88.medium.com/active-model-serializer-custom-with-pagy-pagination-a76a4e8332f0" target="_blank">Active Model Serializers - a custom serializer with pagination</a><span class="blog-date">Feb 16, 2021</span></li>
-            <li><a href="blog/client-requests.html">Client Requests</a><span class="blog-date">Oct 28, 2020</span></li>
-            <li><a href="blog/learning-what-i-thrive-in.html">Learning What I Thrive In</a><span class="blog-date">Aug 26, 2020</span></li>
-            <li><a href="blog/no-free-book.html">No Free Book</a><span class="blog-date">Aug 23, 2020</span></li>
-            <li><a href="blog/passing-the-torch.html">Passing the Torch?</a><span class="blog-date">Aug 10, 2020</span></li>
-            <li><a href="blog/being-technical.html">Being Technical</a><span class="blog-date">Aug 03, 2020</span></li>
-            <li><a href="blog/lebron-for-vp.html">Lebron for VP</a><span class="blog-date">Jul 27, 2020</span></li>
-            <li><a href="blog/book-review-the-biggest-bluff.html">Book Review: The Biggest Bluff</a><span class="blog-date">Jul 23, 2020</span></li>
-            <li><a href="https://dkaplan88.medium.com/feb-29th-should-be-nationaltechdebtday-a9202bc1332d" target="_blank">Feb 29th should be #NationalTechDebtDay</a><span class="blog-date">Feb 29, 2020</span></li>
-            <li><a href="https://dkaplan88.medium.com/the-mortality-paradox-and-optimizing-for-death-bbb92d6e895a" target="_blank">The Mortality Paradox, and Optimizing for Death</a><span class="blog-date">Jan 25, 2016</span></li>
-            <li><a href="https://dkaplan88.medium.com/how-are-you-how-s-it-going-48f0c10734ea" target="_blank">"How are you? How's it going?"</a><span class="blog-date">Jan 24, 2016</span></li>
-            <li><a href="blog/open-source-lounge.html">Open Source Lounge Continues to Thrive</a><span class="blog-date">Apr 7, 2015</span></li>
-            <li><a href="blog/heartbeat-checking-our-pulse.html">Heartbeat - Checking our Pulse</a><span class="blog-date">Oct 8, 2014</span></li>
-          </ul>
-        </section>
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat">
+        <h3>13+</h3>
+        <p>Years Experience</p>
+      </div>
+      <div class="stat">
+        <h3>$2.5B</h3>
+        <p>Platform Built</p>
+      </div>
+      <div class="stat">
+        <h3>$4.25M</h3>
+        <p>Fundraise Led</p>
+      </div>
+      <div class="stat">
+        <h3>150%</h3>
+        <p>Velocity Increase</p>
       </div>
     </div>
   </div>
+
+  <!-- Logo Bar -->
+  <div class="logo-bar">
+    <div class="logo-bar-inner">
+      <p class="logo-bar-label">Companies I've Built With</p>
+      <div class="logo-grid">
+        <div class="logo-item">
+          <span class="logo-placeholder">Home Chef</span>
+        </div>
+        <div class="logo-item">
+          <span class="logo-placeholder">Five to Nine</span>
+        </div>
+        <div class="logo-item">
+          <span class="logo-placeholder">PrizePicks</span>
+        </div>
+        <div class="logo-item">
+          <span class="logo-placeholder">G2</span>
+        </div>
+        <div class="logo-item">
+          <span class="logo-placeholder">Publicis Media</span>
+        </div>
+        <div class="logo-item">
+          <span class="logo-placeholder">Gamut</span>
+        </div>
+        <div class="logo-item">
+          <span class="logo-placeholder">Enova</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About -->
+  <section class="section" id="about">
+    <div class="section-inner">
+      <p class="section-label fade-in">About</p>
+      <h2 class="section-title fade-in">Building things that matter.</h2>
+      <div class="about-grid">
+        <div class="about-text fade-in">
+          <p>I've led engineering organizations through every stage of growth. As a founding engineer, I built the foundations that scaled startups to success. As CTO, I rebuilt entire platforms and drove fundraising. As an Engineering Manager, I develop high-performing teams and accelerate delivery.</p>
+          <p>I'm recognized for turning around underperforming teams, establishing processes that accelerate delivery, and mentoring engineers into leadership roles.</p>
+          <p>In my free time, I'm an avid reader, golfer, world traveler, and am obsessed with anything Minions, Chicago Bulls, and Seinfeld.</p>
+        </div>
+        <div class="fade-in">
+          <div class="skills-grid">
+            <div class="skill-tag">Ruby on Rails</div>
+            <div class="skill-tag">React</div>
+            <div class="skill-tag">React Native</div>
+            <div class="skill-tag">JavaScript</div>
+            <div class="skill-tag">PostgreSQL</div>
+            <div class="skill-tag">AWS</div>
+            <div class="skill-tag">Heroku</div>
+            <div class="skill-tag">Team Leadership</div>
+            <div class="skill-tag">Agile / Scrum</div>
+            <div class="skill-tag">Technical Strategy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section class="section bg-white" id="experience">
+    <div class="section-inner">
+      <p class="section-label fade-in">Experience</p>
+      <h2 class="section-title fade-in">Where I've made an impact.</h2>
+      <p class="section-subtitle fade-in">From first hire to CTO to engineering leadership at scale.</p>
+
+      <div class="experience-grid">
+        <!-- Home Chef -->
+        <div class="exp-card featured fade-in">
+          <p class="exp-company">Home Chef</p>
+          <h3 class="exp-role">Engineering Manager</h3>
+          <p class="exp-dates">March 2022 - Present</p>
+          <p class="exp-desc">Managing 9 direct reports across two teams. Diagnosed and resolved team productivity bottleneck, increasing sprint velocity from 10-14 points to 25+ points. Ranked highest among engineering managers in company-wide OHI Survey. Launched Tech Talk Tuesdays, PR Roundtables, and AI Working Group.</p>
+          <div class="exp-highlights">
+            <span class="exp-highlight">Team Turnaround</span>
+            <span class="exp-highlight">150%+ Velocity Gain</span>
+            <span class="exp-highlight">AI Strategy</span>
+          </div>
+        </div>
+
+        <!-- Five to Nine -->
+        <div class="exp-card fade-in">
+          <p class="exp-company">Five to Nine</p>
+          <h3 class="exp-role">CTO</h3>
+          <p class="exp-dates">April 2020 - March 2022</p>
+          <p class="exp-desc">Built and scaled product team from 2 offshore contractors to 5-person US-based team. Led complete platform rebuild from Rails monolith to Rails API + React. Drove technical strategy for successful $4.25M Series A raise.</p>
+          <div class="exp-highlights">
+            <span class="exp-highlight">$4.25M Raise</span>
+            <span class="exp-highlight">Platform Rebuild</span>
+            <span class="exp-highlight">Fortune 50 Client</span>
+          </div>
+        </div>
+
+        <!-- PrizePicks -->
+        <div class="exp-card fade-in">
+          <p class="exp-company">PrizePicks</p>
+          <h3 class="exp-role">Founding Engineer</h3>
+          <p class="exp-dates">May 2015 - 2022</p>
+          <p class="exp-desc">First engineering hire at platform now valued at $2.5B. Built production-ready web app from prototype, growing to 10K users. Architected live scoring and automated settlement engine. Built sports data integrations across 7 leagues.</p>
+          <div class="exp-highlights">
+            <span class="exp-highlight">$2.5B Valuation</span>
+            <span class="exp-highlight">First Hire</span>
+            <span class="exp-highlight">7 League Integrations</span>
+          </div>
+        </div>
+
+        <!-- G2 -->
+        <div class="exp-card fade-in">
+          <p class="exp-company">G2 (formerly G2 Crowd)</p>
+          <h3 class="exp-role">Software Engineer</h3>
+          <p class="exp-dates">August 2012 - July 2013</p>
+          <p class="exp-desc">First engineering hire at what is now a leading B2B software review platform. Contributed to product foundation, developed key features driving user engagement, and collaborated on SEO strategy achieving #1 rankings.</p>
+          <div class="exp-highlights">
+            <span class="exp-highlight">First Hire</span>
+            <span class="exp-highlight">#1 SEO Rankings</span>
+          </div>
+        </div>
+
+        <!-- Publicis -->
+        <div class="exp-card fade-in">
+          <p class="exp-company">Publicis Media</p>
+          <h3 class="exp-role">Senior Full Stack Engineer</h3>
+          <p class="exp-dates">June 2018 - April 2020</p>
+          <p class="exp-desc">Developed secure backend APIs for ad performance systems. Built responsive data visualization components for complex analytics. Mentored junior developers.</p>
+          <div class="exp-highlights">
+            <span class="exp-highlight">APIs</span>
+            <span class="exp-highlight">Data Visualization</span>
+          </div>
+        </div>
+
+        <!-- Gamut -->
+        <div class="exp-card fade-in">
+          <p class="exp-company">Gamut (A Grainger Company)</p>
+          <h3 class="exp-role">Senior Full Stack Engineer</h3>
+          <p class="exp-dates">December 2016 - June 2018</p>
+          <p class="exp-desc">Rebuilt daily product pricing sync serving 100K+ products. Built customer service tools and order management systems. Recognized twice with engineering excellence awards.</p>
+          <div class="exp-highlights">
+            <span class="exp-highlight">100K+ Products</span>
+            <span class="exp-highlight">Excellence Awards</span>
+          </div>
+        </div>
+
+        <!-- Enova -->
+        <div class="exp-card fade-in">
+          <p class="exp-company">Enova</p>
+          <h3 class="exp-role">Software Engineer &rarr; Senior</h3>
+          <p class="exp-dates">August 2013 - May 2015</p>
+          <p class="exp-desc">Lead developer on CMS with Rails Engine API backend and Ember frontend. Led Compliance team integration. Founded Culture Guild focused on improving R&D culture.</p>
+          <div class="exp-highlights">
+            <span class="exp-highlight">Rails + Ember</span>
+            <span class="exp-highlight">Culture Guild</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="section" id="projects">
+    <div class="section-inner">
+      <p class="section-label fade-in">Side Projects</p>
+      <h2 class="section-title fade-in">What I'm building.</h2>
+      <div class="project-card fade-in">
+        <div class="project-info">
+          <h3>Birdie Social Club</h3>
+          <p>Golf achievement tracking platform enabling golfers to track birdies, eagles, and aces with detailed stats. Available on the App Store.</p>
+          <div class="project-tech">
+            <span>Rails API</span>
+            <span>React</span>
+            <span>React Native</span>
+          </div>
+        </div>
+        <div class="project-preview">
+          <img src="assets/images/birdie-preview.png" alt="Birdie Social Club">
+        </div>
+      </div>
+
+      <div class="project-card fade-in">
+        <div class="project-info">
+          <h3>Roll it Back Productions</h3>
+          <p>Stories of Golf History. Available on YouTube and Spotify</p>
+          <div class="project-tech">
+            <span>CapCut</span>
+            <span>YouTube</span>
+          </div>
+        </div>
+        <div class="project-preview">
+          <img src="assets/images/roll-it-back.png" alt="Roll it Back Productions">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog -->
+  <section class="section bg-white" id="blog">
+    <div class="section-inner">
+      <p class="section-label fade-in">Blog</p>
+      <h2 class="section-title fade-in">Thoughts & writing.</h2>
+      <div class="blog-grid fade-in">
+        <a href="https://dkaplan88.medium.com/state-management-react-hooks-vs-redux-pros-and-cons-f22a669a2ca3" target="_blank" class="blog-card">
+          <span class="blog-date">Jan 5, 2023</span>
+          <span class="blog-title">State Management: React Hooks vs Redux — Pros and Cons</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="https://dkaplan88.medium.com/elastic-beanstalk-git-eb-extensions-a3b7664513ae" target="_blank" class="blog-card">
+          <span class="blog-date">Jul 23, 2021</span>
+          <span class="blog-title">Elastic Beanstalk & Git</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="https://dkaplan88.medium.com/devils-advocate-code-reviews-e3e1db6fdd10" target="_blank" class="blog-card">
+          <span class="blog-date">May 4, 2021</span>
+          <span class="blog-title">Devil's Advocate Code Reviews</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="https://dkaplan88.medium.com/active-model-serializer-custom-with-pagy-pagination-a76a4e8332f0" target="_blank" class="blog-card">
+          <span class="blog-date">Feb 16, 2021</span>
+          <span class="blog-title">Active Model Serializers - a custom serializer with pagination</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/client-requests.html" class="blog-card">
+          <span class="blog-date">Oct 28, 2020</span>
+          <span class="blog-title">Client Requests</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/learning-what-i-thrive-in.html" class="blog-card">
+          <span class="blog-date">Aug 26, 2020</span>
+          <span class="blog-title">Learning What I Thrive In</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/no-free-book.html" class="blog-card hidden">
+          <span class="blog-date">Aug 23, 2020</span>
+          <span class="blog-title">No Free Book</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/passing-the-torch.html" class="blog-card hidden">
+          <span class="blog-date">Aug 10, 2020</span>
+          <span class="blog-title">Passing the Torch?</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/being-technical.html" class="blog-card hidden">
+          <span class="blog-date">Aug 03, 2020</span>
+          <span class="blog-title">Being Technical</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/lebron-for-vp.html" class="blog-card hidden">
+          <span class="blog-date">Jul 27, 2020</span>
+          <span class="blog-title">Lebron for VP</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/book-review-the-biggest-bluff.html" class="blog-card hidden">
+          <span class="blog-date">Jul 23, 2020</span>
+          <span class="blog-title">Book Review: The Biggest Bluff</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="https://dkaplan88.medium.com/feb-29th-should-be-nationaltechdebtday-a9202bc1332d" target="_blank" class="blog-card hidden">
+          <span class="blog-date">Feb 29, 2020</span>
+          <span class="blog-title">Feb 29th should be #NationalTechDebtDay</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="https://dkaplan88.medium.com/the-mortality-paradox-and-optimizing-for-death-bbb92d6e895a" target="_blank" class="blog-card hidden">
+          <span class="blog-date">Jan 25, 2016</span>
+          <span class="blog-title">The Mortality Paradox, and Optimizing for Death</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="https://dkaplan88.medium.com/how-are-you-how-s-it-going-48f0c10734ea" target="_blank" class="blog-card hidden">
+          <span class="blog-date">Jan 24, 2016</span>
+          <span class="blog-title">"How are you? How's it going?"</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/open-source-lounge.html" class="blog-card hidden">
+          <span class="blog-date">Apr 7, 2015</span>
+          <span class="blog-title">Open Source Lounge Continues to Thrive</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+        <a href="blog/heartbeat-checking-our-pulse.html" class="blog-card hidden">
+          <span class="blog-date">Oct 8, 2014</span>
+          <span class="blog-title">Heartbeat - Checking our Pulse</span>
+          <span class="blog-arrow">Read &rarr;</span>
+        </a>
+      </div>
+      <div class="blog-show-more">
+        <button onclick="toggleBlogPosts()">Show All Posts</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <h3>Let's connect.</h3>
+        <p>Always open to interesting conversations and opportunities.</p>
+      </div>
+      <div class="footer-links">
+        <a href="mailto:dskaplan88@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/dkaplan88/" target="_blank">LinkedIn</a>
+        <a href="https://github.com/dkaplan88" target="_blank">GitHub</a>
+        <a href="https://twitter.com/_dankaplan" target="_blank">Twitter</a>
+        <a href="assets/Dan_Kaplan_Resume.pdf" download>Resume</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Blog show/hide
+    function toggleBlogPosts() {
+      const hidden = document.querySelectorAll('.blog-card.hidden');
+      const btn = document.querySelector('.blog-show-more button');
+      const isShowing = hidden.length > 0 && hidden[0].style.display === 'flex';
+
+      hidden.forEach(card => {
+        card.style.display = isShowing ? 'none' : 'flex';
+      });
+
+      btn.textContent = isShowing ? 'Show All Posts' : 'Show Less';
+    }
+  </script>
 </body>
 </html>
