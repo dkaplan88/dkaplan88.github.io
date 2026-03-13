@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brazil Area Code Quiz - Dan Kaplan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      color: #1a1a2e;
+      background: linear-gradient(135deg, #009c3b 0%, #002776 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 24px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .back-link:hover { color: #fff; text-decoration: underline; }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      color: #64648c;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      background: #f0fdf4;
+      border-radius: 10px;
+      padding: 10px 16px;
+      flex: 1;
+      min-width: 80px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #009c3b;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: #64648c;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e2e0f0;
+      border-radius: 10px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64648c;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn.active {
+      border-color: #009c3b;
+      background: #f0fdf4;
+      color: #009c3b;
+    }
+    .mode-btn:hover:not(.active) {
+      border-color: #86efac;
+    }
+
+    .question-area {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .area-code {
+      font-size: 4rem;
+      font-weight: 800;
+      color: #009c3b;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .question-label {
+      font-size: 0.85rem;
+      color: #64648c;
+      margin-top: 4px;
+    }
+    .location-prompt {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #009c3b;
+      line-height: 1.2;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .choice-btn {
+      padding: 14px 12px;
+      border: 2px solid #e2e0f0;
+      border-radius: 10px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1a1a2e;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .choice-btn:hover:not(:disabled) {
+      border-color: #009c3b;
+      background: #f0fdf4;
+    }
+    .choice-btn:disabled { cursor: default; }
+    .choice-btn.correct {
+      border-color: #22c55e;
+      background: #f0fdf4;
+      color: #166534;
+    }
+    .choice-btn.wrong {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    .choice-btn.reveal {
+      border-color: #22c55e;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .feedback {
+      text-align: center;
+      min-height: 24px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+    .feedback.correct-fb { color: #22c55e; }
+    .feedback.wrong-fb { color: #ef4444; }
+
+    .map-container {
+      display: none;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #e2e0f0;
+    }
+    .map-container.visible { display: block; }
+    #map {
+      height: 260px;
+      width: 100%;
+    }
+    .map-label {
+      text-align: center;
+      padding: 8px;
+      font-size: 0.78rem;
+      color: #64648c;
+      background: #f9fafb;
+      font-weight: 500;
+    }
+
+    .next-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #009c3b, #002776);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      display: none;
+    }
+    .next-btn:hover { opacity: 0.9; }
+    .next-btn.visible { display: block; }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-bar label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #64648c;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .filter-bar select {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid #e2e0f0;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: #1a1a2e;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    @media (max-width: 500px) {
+      .card { padding: 24px; }
+      .area-code { font-size: 3rem; }
+      .location-prompt { font-size: 1.4rem; }
+      .choices { grid-template-columns: 1fr; }
+      .stats { gap: 8px; }
+      .stat { padding: 8px 10px; }
+      #map { height: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../../index.html" class="back-link">&larr; Back to Home</a>
+    <div class="card">
+      <h1>Brazil Area Code Quiz</h1>
+      <p class="subtitle">Learn Brazilian DDDs for GeoGuessr</p>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="score">0</div>
+          <div class="stat-label">Score</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="streak">0</div>
+          <div class="stat-label">Streak</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="total">0</div>
+          <div class="stat-label">Answered</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="pct">0%</div>
+          <div class="stat-label">Accuracy</div>
+        </div>
+      </div>
+
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="code-to-place">Code &rarr; Place</button>
+        <button class="mode-btn" data-mode="place-to-code">Place &rarr; Code</button>
+      </div>
+
+      <div class="filter-bar">
+        <label>Region:</label>
+        <select id="region-filter">
+          <option value="all">All Brazil</option>
+          <option value="Norte">Norte</option>
+          <option value="Nordeste">Nordeste</option>
+          <option value="Centro-Oeste">Centro-Oeste</option>
+          <option value="Sudeste">Sudeste</option>
+          <option value="Sul">Sul</option>
+        </select>
+      </div>
+
+      <div class="question-area" id="question-area">
+        <div class="area-code" id="area-code">11</div>
+        <div class="question-label" id="question-label">Where is this DDD?</div>
+      </div>
+
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="map-container" id="map-container">
+        <div id="map"></div>
+        <div class="map-label" id="map-label"></div>
+      </div>
+
+      <button class="next-btn" id="next-btn">Next Question &rarr;</button>
+    </div>
+  </div>
+
+<script>
+const AREA_CODES = [
+  // São Paulo state
+  {code:"11",place:"São Paulo (capital/metro)",state:"SP",region:"Sudeste",lat:-23.55,lng:-46.63},
+  {code:"12",place:"São José dos Campos / Taubaté",state:"SP",region:"Sudeste",lat:-23.18,lng:-45.88},
+  {code:"13",place:"Santos / Baixada Santista",state:"SP",region:"Sudeste",lat:-23.96,lng:-46.33},
+  {code:"14",place:"Bauru / Marília / Jaú",state:"SP",region:"Sudeste",lat:-22.31,lng:-49.07},
+  {code:"15",place:"Sorocaba / Itapetininga",state:"SP",region:"Sudeste",lat:-23.50,lng:-47.46},
+  {code:"16",place:"Ribeirão Preto / Araraquara / São Carlos",state:"SP",region:"Sudeste",lat:-21.18,lng:-47.81},
+  {code:"17",place:"São José do Rio Preto / Catanduva",state:"SP",region:"Sudeste",lat:-20.82,lng:-49.38},
+  {code:"18",place:"Presidente Prudente / Assis",state:"SP",region:"Sudeste",lat:-22.12,lng:-51.39},
+  {code:"19",place:"Campinas / Piracicaba / Limeira",state:"SP",region:"Sudeste",lat:-22.91,lng:-47.06},
+
+  // Rio de Janeiro state
+  {code:"21",place:"Rio de Janeiro (capital/metro)",state:"RJ",region:"Sudeste",lat:-22.91,lng:-43.17},
+  {code:"22",place:"Campos dos Goytacazes / Nova Friburgo / Macaé",state:"RJ",region:"Sudeste",lat:-21.76,lng:-41.33},
+  {code:"24",place:"Petrópolis / Volta Redonda / Angra dos Reis",state:"RJ",region:"Sudeste",lat:-22.52,lng:-43.18},
+
+  // Espírito Santo
+  {code:"27",place:"Vitória / Vila Velha / Serra",state:"ES",region:"Sudeste",lat:-20.32,lng:-40.34},
+  {code:"28",place:"Cachoeiro de Itapemirim",state:"ES",region:"Sudeste",lat:-20.85,lng:-41.11},
+
+  // Minas Gerais
+  {code:"31",place:"Belo Horizonte (capital/metro)",state:"MG",region:"Sudeste",lat:-19.92,lng:-43.94},
+  {code:"32",place:"Juiz de Fora / Barbacena",state:"MG",region:"Sudeste",lat:-21.76,lng:-43.35},
+  {code:"33",place:"Governador Valadares / Teófilo Otoni",state:"MG",region:"Sudeste",lat:-18.85,lng:-41.95},
+  {code:"34",place:"Uberlândia / Uberaba",state:"MG",region:"Sudeste",lat:-18.92,lng:-48.28},
+  {code:"35",place:"Poços de Caldas / Varginha / Pouso Alegre",state:"MG",region:"Sudeste",lat:-21.78,lng:-46.56},
+  {code:"37",place:"Divinópolis / Itaúna",state:"MG",region:"Sudeste",lat:-20.14,lng:-44.88},
+  {code:"38",place:"Montes Claros / Diamantina",state:"MG",region:"Sudeste",lat:-16.73,lng:-43.86},
+
+  // Paraná
+  {code:"41",place:"Curitiba (capital/metro)",state:"PR",region:"Sul",lat:-25.43,lng:-49.27},
+  {code:"42",place:"Ponta Grossa / Guarapuava",state:"PR",region:"Sul",lat:-25.09,lng:-50.16},
+  {code:"43",place:"Londrina / Apucarana",state:"PR",region:"Sul",lat:-23.30,lng:-51.18},
+  {code:"44",place:"Maringá / Umuarama / Campo Mourão",state:"PR",region:"Sul",lat:-23.42,lng:-51.94},
+  {code:"45",place:"Foz do Iguaçu / Cascavel",state:"PR",region:"Sul",lat:-25.44,lng:-54.59},
+  {code:"46",place:"Francisco Beltrão / Pato Branco",state:"PR",region:"Sul",lat:-26.07,lng:-53.06},
+
+  // Santa Catarina
+  {code:"47",place:"Joinville / Blumenau / Itajaí",state:"SC",region:"Sul",lat:-26.30,lng:-48.85},
+  {code:"48",place:"Florianópolis / Criciúma",state:"SC",region:"Sul",lat:-27.60,lng:-48.55},
+  {code:"49",place:"Chapecó / Lages",state:"SC",region:"Sul",lat:-27.10,lng:-52.62},
+
+  // Rio Grande do Sul
+  {code:"51",place:"Porto Alegre (capital/metro)",state:"RS",region:"Sul",lat:-30.03,lng:-51.23},
+  {code:"53",place:"Pelotas / Rio Grande",state:"RS",region:"Sul",lat:-31.77,lng:-52.34},
+  {code:"54",place:"Caxias do Sul / Passo Fundo",state:"RS",region:"Sul",lat:-29.17,lng:-51.18},
+  {code:"55",place:"Santa Maria / Uruguaiana / Cruz Alta",state:"RS",region:"Sul",lat:-29.68,lng:-53.81},
+
+  // Distrito Federal / Goiás
+  {code:"61",place:"Brasília (Distrito Federal)",state:"DF",region:"Centro-Oeste",lat:-15.79,lng:-47.88},
+  {code:"62",place:"Goiânia / Aparecida de Goiânia",state:"GO",region:"Centro-Oeste",lat:-16.68,lng:-49.25},
+  {code:"64",place:"Rio Verde / Itumbiara / Jataí",state:"GO",region:"Centro-Oeste",lat:-17.80,lng:-49.50},
+
+  // Mato Grosso do Sul / Mato Grosso / Tocantins / Acre / Rondônia
+  {code:"63",place:"Palmas / Tocantins",state:"TO",region:"Norte",lat:-10.18,lng:-48.33},
+  {code:"65",place:"Cuiabá / Várzea Grande",state:"MT",region:"Centro-Oeste",lat:-15.60,lng:-56.10},
+  {code:"66",place:"Rondonópolis / Sinop",state:"MT",region:"Centro-Oeste",lat:-16.47,lng:-54.64},
+  {code:"67",place:"Campo Grande / Dourados",state:"MS",region:"Centro-Oeste",lat:-20.44,lng:-54.65},
+  {code:"68",place:"Rio Branco / Acre",state:"AC",region:"Norte",lat:-9.97,lng:-67.81},
+  {code:"69",place:"Porto Velho / Rondônia",state:"RO",region:"Norte",lat:-8.76,lng:-63.90},
+
+  // Bahia / Sergipe
+  {code:"71",place:"Salvador (capital/metro)",state:"BA",region:"Nordeste",lat:-12.97,lng:-38.51},
+  {code:"73",place:"Itabuna / Ilhéus / Teixeira de Freitas",state:"BA",region:"Nordeste",lat:-14.79,lng:-39.28},
+  {code:"74",place:"Juazeiro / Jacobina",state:"BA",region:"Nordeste",lat:-9.41,lng:-40.50},
+  {code:"75",place:"Feira de Santana / Alagoinhas",state:"BA",region:"Nordeste",lat:-12.27,lng:-38.97},
+  {code:"77",place:"Vitória da Conquista / Barreiras",state:"BA",region:"Nordeste",lat:-14.86,lng:-40.84},
+  {code:"79",place:"Aracaju / Sergipe",state:"SE",region:"Nordeste",lat:-10.91,lng:-37.07},
+
+  // Pernambuco / Alagoas / Paraíba / Rio Grande do Norte
+  {code:"81",place:"Recife (capital/metro)",state:"PE",region:"Nordeste",lat:-8.05,lng:-34.87},
+  {code:"82",place:"Maceió / Alagoas",state:"AL",region:"Nordeste",lat:-9.67,lng:-35.74},
+  {code:"83",place:"João Pessoa / Campina Grande",state:"PB",region:"Nordeste",lat:-7.12,lng:-34.86},
+  {code:"84",place:"Natal / Mossoró",state:"RN",region:"Nordeste",lat:-5.79,lng:-35.21},
+  {code:"85",place:"Fortaleza (capital/metro)",state:"CE",region:"Nordeste",lat:-3.72,lng:-38.53},
+  {code:"86",place:"Teresina / Piauí",state:"PI",region:"Nordeste",lat:-5.09,lng:-42.80},
+  {code:"87",place:"Petrolina / Garanhuns / Caruaru (sertão PE)",state:"PE",region:"Nordeste",lat:-8.88,lng:-36.50},
+  {code:"88",place:"Juazeiro do Norte / Sobral (interior CE)",state:"CE",region:"Nordeste",lat:-7.21,lng:-39.32},
+  {code:"89",place:"Picos / Floriano (interior PI)",state:"PI",region:"Nordeste",lat:-7.08,lng:-41.47},
+
+  // Maranhão / Pará / Amapá / Amazonas / Roraima
+  {code:"91",place:"Belém (capital/metro)",state:"PA",region:"Norte",lat:-1.46,lng:-48.50},
+  {code:"92",place:"Manaus (capital/metro)",state:"AM",region:"Norte",lat:-3.12,lng:-60.02},
+  {code:"93",place:"Santarém / Altamira",state:"PA",region:"Norte",lat:-2.44,lng:-54.71},
+  {code:"94",place:"Marabá / Parauapebas",state:"PA",region:"Norte",lat:-5.37,lng:-49.13},
+  {code:"95",place:"Boa Vista / Roraima",state:"RR",region:"Norte",lat:2.82,lng:-60.67},
+  {code:"96",place:"Macapá / Amapá",state:"AP",region:"Norte",lat:0.03,lng:-51.07},
+  {code:"97",place:"Interior do Amazonas (Coari/Tefé/Parintins)",state:"AM",region:"Norte",lat:-3.37,lng:-64.72},
+  {code:"98",place:"São Luís / Maranhão",state:"MA",region:"Nordeste",lat:-2.53,lng:-44.28},
+  {code:"99",place:"Imperatriz / Caxias (interior MA)",state:"MA",region:"Nordeste",lat:-5.52,lng:-47.47}
+];
+
+// Game state
+let mode = 'code-to-place';
+let regionFilter = 'all';
+let currentQuestion = null;
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+let total = 0;
+let answered = false;
+let map = null;
+let marker = null;
+
+// DOM elements
+const scoreEl = document.getElementById('score');
+const streakEl = document.getElementById('streak');
+const totalEl = document.getElementById('total');
+const pctEl = document.getElementById('pct');
+const questionArea = document.getElementById('question-area');
+const choicesEl = document.getElementById('choices');
+const feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('next-btn');
+const regionSelect = document.getElementById('region-filter');
+const mapContainer = document.getElementById('map-container');
+const mapLabel = document.getElementById('map-label');
+
+function initMap() {
+  map = L.map('map', {
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    touchZoom: false
+  }).setView([-14.24, -51.93], 4);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 12
+  }).addTo(map);
+  L.control.attribution({prefix: false}).addAttribution('&copy; <a href="https://openstreetmap.org">OSM</a>').addTo(map);
+}
+
+function showMap(lat, lng, label) {
+  mapContainer.classList.add('visible');
+  if (!map) initMap();
+  if (marker) map.removeLayer(marker);
+
+  const customIcon = L.divIcon({
+    className: 'custom-pin',
+    html: '<div style="width:14px;height:14px;background:#009c3b;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+  });
+
+  marker = L.marker([lat, lng], {icon: customIcon}).addTo(map);
+  map.setView([lat, lng], 6);
+  mapLabel.textContent = label;
+  setTimeout(() => map.invalidateSize(), 50);
+}
+
+function hideMap() {
+  mapContainer.classList.remove('visible');
+}
+
+// Mode toggle
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    resetGame();
+  });
+});
+
+regionSelect.addEventListener('change', () => {
+  regionFilter = regionSelect.value;
+  resetGame();
+});
+
+nextBtn.addEventListener('click', () => newQuestion());
+
+document.addEventListener('keydown', (e) => {
+  if (answered && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault();
+    newQuestion();
+    return;
+  }
+  if (!answered && currentQuestion) {
+    const num = parseInt(e.key);
+    if (num >= 1 && num <= 4) {
+      const btns = choicesEl.querySelectorAll('.choice-btn');
+      if (btns[num - 1]) btns[num - 1].click();
+    }
+  }
+});
+
+function getFilteredCodes() {
+  if (regionFilter === 'all') return AREA_CODES;
+  return AREA_CODES.filter(ac => ac.region === regionFilter);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickRandom(arr, n) {
+  return shuffle(arr).slice(0, n);
+}
+
+function newQuestion() {
+  answered = false;
+  feedbackEl.textContent = '';
+  feedbackEl.className = 'feedback';
+  nextBtn.classList.remove('visible');
+  hideMap();
+
+  const pool = getFilteredCodes();
+  if (pool.length < 4) {
+    choicesEl.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#64648c;">Not enough area codes in this region. Try "All Brazil".</p>';
+    return;
+  }
+
+  const correct = pool[Math.floor(Math.random() * pool.length)];
+  const wrongPool = pool.filter(ac => ac.state !== correct.state);
+  const fallbackPool = pool.filter(ac => ac.code !== correct.code);
+  const sourcePool = wrongPool.length >= 3 ? wrongPool : fallbackPool;
+  const wrongs = pickRandom(sourcePool.filter(ac => ac.code !== correct.code), 3);
+  const options = shuffle([correct, ...wrongs]);
+
+  currentQuestion = { correct, options };
+
+  if (mode === 'code-to-place') {
+    questionArea.innerHTML = `
+      <div class="area-code">(${correct.code})</div>
+      <div class="question-label">Where is this DDD?</div>
+    `;
+    choicesEl.innerHTML = options.map((o, i) =>
+      `<button class="choice-btn" data-code="${o.code}"><span style="opacity:0.4;font-size:0.75rem;">${i+1}. </span>${o.place} <span style="opacity:0.5;font-size:0.8rem;">(${o.state})</span></button>`
+    ).join('');
+  } else {
+    questionArea.innerHTML = `
+      <div class="location-prompt">${correct.place}</div>
+      <div class="question-label" style="margin-top:4px;">${correct.state} &middot; What is the DDD?</div>
+    `;
+    choicesEl.innerHTML = options.map((o, i) =>
+      `<button class="choice-btn" data-code="${o.code}"><span style="opacity:0.4;font-size:0.75rem;">${i+1}. </span>(${o.code})</button>`
+    ).join('');
+  }
+
+  choicesEl.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleAnswer(btn));
+  });
+}
+
+function handleAnswer(btn) {
+  if (answered) return;
+  answered = true;
+
+  const selectedCode = btn.dataset.code;
+  const correct = currentQuestion.correct;
+  const isCorrect = selectedCode === correct.code;
+
+  if (isCorrect) {
+    score++;
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+    btn.classList.add('correct');
+    feedbackEl.textContent = 'Correct!';
+    feedbackEl.className = 'feedback correct-fb';
+  } else {
+    streak = 0;
+    btn.classList.add('wrong');
+    feedbackEl.textContent = `Nope! It's ${correct.place} (${correct.code}) — ${correct.state}`;
+    feedbackEl.className = 'feedback wrong-fb';
+    choicesEl.querySelectorAll('.choice-btn').forEach(b => {
+      if (b.dataset.code === correct.code) b.classList.add('reveal');
+    });
+  }
+
+  total++;
+  choicesEl.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  updateStats();
+
+  showMap(correct.lat, correct.lng, `(${correct.code}) — ${correct.place}, ${correct.state}`);
+
+  nextBtn.classList.add('visible');
+}
+
+function updateStats() {
+  scoreEl.textContent = score;
+  streakEl.textContent = streak;
+  totalEl.textContent = total;
+  pctEl.textContent = total === 0 ? '0%' : Math.round((score / total) * 100) + '%';
+}
+
+function resetGame() {
+  score = 0;
+  streak = 0;
+  total = 0;
+  updateStats();
+  newQuestion();
+}
+
+newQuestion();
+</script>
+</body>
+</html>

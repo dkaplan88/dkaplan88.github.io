@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>US Area Code Quiz - Dan Kaplan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      color: #1a1a2e;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 24px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .back-link:hover { color: #fff; text-decoration: underline; }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      color: #64648c;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    /* Stats bar */
+    .stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      background: #f5f3ff;
+      border-radius: 10px;
+      padding: 10px 16px;
+      flex: 1;
+      min-width: 80px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #6366f1;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      color: #64648c;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    /* Mode toggle */
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e2e0f0;
+      border-radius: 10px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #64648c;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn.active {
+      border-color: #6366f1;
+      background: #f5f3ff;
+      color: #6366f1;
+    }
+    .mode-btn:hover:not(.active) {
+      border-color: #c4b5fd;
+    }
+
+    /* Question area */
+    .question-area {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .area-code {
+      font-size: 4rem;
+      font-weight: 800;
+      color: #6366f1;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .question-label {
+      font-size: 0.85rem;
+      color: #64648c;
+      margin-top: 4px;
+    }
+    .location-prompt {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #6366f1;
+      line-height: 1.2;
+    }
+
+    /* Answer choices */
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .choice-btn {
+      padding: 14px 12px;
+      border: 2px solid #e2e0f0;
+      border-radius: 10px;
+      background: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1a1a2e;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .choice-btn:hover:not(:disabled) {
+      border-color: #6366f1;
+      background: #f5f3ff;
+    }
+    .choice-btn:disabled { cursor: default; }
+    .choice-btn.correct {
+      border-color: #22c55e;
+      background: #f0fdf4;
+      color: #166534;
+    }
+    .choice-btn.wrong {
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #991b1b;
+    }
+    .choice-btn.reveal {
+      border-color: #22c55e;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    /* Feedback */
+    .feedback {
+      text-align: center;
+      min-height: 24px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+    .feedback.correct-fb { color: #22c55e; }
+    .feedback.wrong-fb { color: #ef4444; }
+
+    /* Map */
+    .map-container {
+      display: none;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #e2e0f0;
+    }
+    .map-container.visible { display: block; }
+    #map {
+      height: 240px;
+      width: 100%;
+    }
+    .map-label {
+      text-align: center;
+      padding: 8px;
+      font-size: 0.78rem;
+      color: #64648c;
+      background: #f9fafb;
+      font-weight: 500;
+    }
+
+    /* Next button */
+    .next-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      display: none;
+    }
+    .next-btn:hover { opacity: 0.9; }
+    .next-btn.visible { display: block; }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-bar label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #64648c;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .filter-bar select {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid #e2e0f0;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: #1a1a2e;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    @media (max-width: 500px) {
+      .card { padding: 24px; }
+      .area-code { font-size: 3rem; }
+      .location-prompt { font-size: 1.4rem; }
+      .choices { grid-template-columns: 1fr; }
+      .stats { gap: 8px; }
+      .stat { padding: 8px 10px; }
+      #map { height: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="../../index.html" class="back-link">&larr; Back to Home</a>
+    <div class="card">
+      <h1>US Area Code Quiz</h1>
+      <p class="subtitle">Learn US phone area codes for GeoGuessr</p>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="score">0</div>
+          <div class="stat-label">Score</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="streak">0</div>
+          <div class="stat-label">Streak</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="total">0</div>
+          <div class="stat-label">Answered</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="pct">0%</div>
+          <div class="stat-label">Accuracy</div>
+        </div>
+      </div>
+
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="code-to-place">Code &rarr; Place</button>
+        <button class="mode-btn" data-mode="place-to-code">Place &rarr; Code</button>
+      </div>
+
+      <div class="filter-bar">
+        <label>Region:</label>
+        <select id="region-filter">
+          <option value="all">All US</option>
+          <option value="Northeast">Northeast</option>
+          <option value="Southeast">Southeast</option>
+          <option value="Midwest">Midwest</option>
+          <option value="Southwest">Southwest</option>
+          <option value="West">West</option>
+        </select>
+      </div>
+
+      <div class="question-area" id="question-area">
+        <div class="area-code" id="area-code">212</div>
+        <div class="question-label" id="question-label">Where is this area code?</div>
+      </div>
+
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="map-container" id="map-container">
+        <div id="map"></div>
+        <div class="map-label" id="map-label"></div>
+      </div>
+
+      <button class="next-btn" id="next-btn">Next Question &rarr;</button>
+    </div>
+  </div>
+
+<script>
+const AREA_CODES = [
+  {code:"201",place:"New Jersey (Jersey City/Hackensack)",state:"NJ",region:"Northeast",lat:40.73,lng:-74.08},
+  {code:"202",place:"Washington, D.C.",state:"DC",region:"Northeast",lat:38.91,lng:-77.04},
+  {code:"203",place:"Connecticut (Bridgeport/New Haven)",state:"CT",region:"Northeast",lat:41.18,lng:-73.19},
+  {code:"207",place:"Maine",state:"ME",region:"Northeast",lat:44.69,lng:-69.38},
+  {code:"208",place:"Idaho",state:"ID",region:"West",lat:43.62,lng:-114.74},
+  {code:"210",place:"Texas (San Antonio)",state:"TX",region:"Southwest",lat:29.42,lng:-98.49},
+  {code:"212",place:"New York (Manhattan)",state:"NY",region:"Northeast",lat:40.78,lng:-73.97},
+  {code:"213",place:"California (Los Angeles)",state:"CA",region:"West",lat:34.05,lng:-118.24},
+  {code:"214",place:"Texas (Dallas)",state:"TX",region:"Southwest",lat:32.78,lng:-96.80},
+  {code:"215",place:"Pennsylvania (Philadelphia)",state:"PA",region:"Northeast",lat:39.95,lng:-75.17},
+  {code:"216",place:"Ohio (Cleveland)",state:"OH",region:"Midwest",lat:41.50,lng:-81.69},
+  {code:"217",place:"Illinois (Springfield/Champaign)",state:"IL",region:"Midwest",lat:39.80,lng:-89.65},
+  {code:"218",place:"Minnesota (Duluth)",state:"MN",region:"Midwest",lat:46.79,lng:-92.10},
+  {code:"219",place:"Indiana (Gary/Hammond)",state:"IN",region:"Midwest",lat:41.59,lng:-87.35},
+  {code:"224",place:"Illinois (suburbs of Chicago)",state:"IL",region:"Midwest",lat:42.18,lng:-87.90},
+  {code:"225",place:"Louisiana (Baton Rouge)",state:"LA",region:"Southeast",lat:30.45,lng:-91.15},
+  {code:"228",place:"Mississippi (Biloxi/Gulfport)",state:"MS",region:"Southeast",lat:30.40,lng:-88.89},
+  {code:"229",place:"Georgia (Albany)",state:"GA",region:"Southeast",lat:31.58,lng:-84.16},
+  {code:"231",place:"Michigan (Muskegon/Traverse City)",state:"MI",region:"Midwest",lat:43.23,lng:-86.25},
+  {code:"234",place:"Ohio (Akron/Youngstown)",state:"OH",region:"Midwest",lat:41.08,lng:-81.52},
+  {code:"239",place:"Florida (Fort Myers/Naples)",state:"FL",region:"Southeast",lat:26.64,lng:-81.87},
+  {code:"240",place:"Maryland (Western suburbs of D.C.)",state:"MD",region:"Northeast",lat:39.08,lng:-77.15},
+  {code:"248",place:"Michigan (Oakland County/Pontiac)",state:"MI",region:"Midwest",lat:42.64,lng:-83.29},
+  {code:"251",place:"Alabama (Mobile)",state:"AL",region:"Southeast",lat:30.69,lng:-88.04},
+  {code:"252",place:"North Carolina (Greenville/Outer Banks)",state:"NC",region:"Southeast",lat:35.60,lng:-77.37},
+  {code:"253",place:"Washington (Tacoma)",state:"WA",region:"West",lat:47.25,lng:-122.44},
+  {code:"254",place:"Texas (Killeen/Waco)",state:"TX",region:"Southwest",lat:31.12,lng:-97.73},
+  {code:"256",place:"Alabama (Huntsville)",state:"AL",region:"Southeast",lat:34.73,lng:-86.59},
+  {code:"260",place:"Indiana (Fort Wayne)",state:"IN",region:"Midwest",lat:41.08,lng:-85.14},
+  {code:"262",place:"Wisconsin (Racine/Kenosha)",state:"WI",region:"Midwest",lat:42.73,lng:-87.78},
+  {code:"267",place:"Pennsylvania (Philadelphia overlay)",state:"PA",region:"Northeast",lat:39.95,lng:-75.17},
+  {code:"269",place:"Michigan (Kalamazoo)",state:"MI",region:"Midwest",lat:42.29,lng:-85.59},
+  {code:"270",place:"Kentucky (Bowling Green)",state:"KY",region:"Southeast",lat:36.99,lng:-86.44},
+  {code:"276",place:"Virginia (Bristol/Martinsville)",state:"VA",region:"Southeast",lat:36.60,lng:-82.19},
+  {code:"281",place:"Texas (Houston suburbs)",state:"TX",region:"Southwest",lat:29.76,lng:-95.36},
+  {code:"301",place:"Maryland (Silver Spring/Rockville)",state:"MD",region:"Northeast",lat:39.08,lng:-77.05},
+  {code:"302",place:"Delaware",state:"DE",region:"Northeast",lat:39.16,lng:-75.52},
+  {code:"303",place:"Colorado (Denver/Boulder)",state:"CO",region:"West",lat:39.74,lng:-104.99},
+  {code:"304",place:"West Virginia",state:"WV",region:"Southeast",lat:38.35,lng:-81.63},
+  {code:"305",place:"Florida (Miami)",state:"FL",region:"Southeast",lat:25.76,lng:-80.19},
+  {code:"307",place:"Wyoming",state:"WY",region:"West",lat:42.76,lng:-107.22},
+  {code:"308",place:"Nebraska (western)",state:"NE",region:"Midwest",lat:40.87,lng:-100.55},
+  {code:"309",place:"Illinois (Peoria)",state:"IL",region:"Midwest",lat:40.69,lng:-89.59},
+  {code:"310",place:"California (West Los Angeles/Beverly Hills)",state:"CA",region:"West",lat:33.98,lng:-118.41},
+  {code:"312",place:"Illinois (Chicago downtown)",state:"IL",region:"Midwest",lat:41.88,lng:-87.63},
+  {code:"313",place:"Michigan (Detroit)",state:"MI",region:"Midwest",lat:42.33,lng:-83.05},
+  {code:"314",place:"Missouri (St. Louis)",state:"MO",region:"Midwest",lat:38.63,lng:-90.20},
+  {code:"315",place:"New York (Syracuse)",state:"NY",region:"Northeast",lat:43.05,lng:-76.15},
+  {code:"316",place:"Kansas (Wichita)",state:"KS",region:"Midwest",lat:37.69,lng:-97.34},
+  {code:"317",place:"Indiana (Indianapolis)",state:"IN",region:"Midwest",lat:39.77,lng:-86.16},
+  {code:"318",place:"Louisiana (Shreveport)",state:"LA",region:"Southeast",lat:32.53,lng:-93.75},
+  {code:"319",place:"Iowa (Cedar Rapids)",state:"IA",region:"Midwest",lat:41.98,lng:-91.67},
+  {code:"320",place:"Minnesota (St. Cloud)",state:"MN",region:"Midwest",lat:45.56,lng:-94.16},
+  {code:"321",place:"Florida (Orlando/Space Coast)",state:"FL",region:"Southeast",lat:28.54,lng:-81.38},
+  {code:"323",place:"California (Los Angeles central)",state:"CA",region:"West",lat:34.02,lng:-118.28},
+  {code:"325",place:"Texas (Abilene)",state:"TX",region:"Southwest",lat:32.45,lng:-99.73},
+  {code:"330",place:"Ohio (Akron/Youngstown)",state:"OH",region:"Midwest",lat:41.08,lng:-81.52},
+  {code:"331",place:"Illinois (Aurora/western suburbs)",state:"IL",region:"Midwest",lat:41.76,lng:-88.32},
+  {code:"334",place:"Alabama (Montgomery)",state:"AL",region:"Southeast",lat:32.38,lng:-86.30},
+  {code:"336",place:"North Carolina (Greensboro/Winston-Salem)",state:"NC",region:"Southeast",lat:36.07,lng:-79.79},
+  {code:"337",place:"Louisiana (Lafayette/Lake Charles)",state:"LA",region:"Southeast",lat:30.22,lng:-92.02},
+  {code:"339",place:"Massachusetts (south of Boston overlay)",state:"MA",region:"Northeast",lat:42.08,lng:-71.02},
+  {code:"340",place:"US Virgin Islands",state:"VI",region:"Southeast",lat:18.34,lng:-64.93},
+  {code:"346",place:"Texas (Houston overlay)",state:"TX",region:"Southwest",lat:29.76,lng:-95.36},
+  {code:"347",place:"New York (NYC overlay)",state:"NY",region:"Northeast",lat:40.65,lng:-73.95},
+  {code:"351",place:"Massachusetts (north of Boston overlay)",state:"MA",region:"Northeast",lat:42.53,lng:-70.89},
+  {code:"352",place:"Florida (Gainesville/Ocala)",state:"FL",region:"Southeast",lat:29.65,lng:-82.32},
+  {code:"360",place:"Washington (Olympia/Bellingham)",state:"WA",region:"West",lat:47.04,lng:-122.90},
+  {code:"361",place:"Texas (Corpus Christi)",state:"TX",region:"Southwest",lat:27.80,lng:-97.40},
+  {code:"385",place:"Utah (Salt Lake City overlay)",state:"UT",region:"West",lat:40.76,lng:-111.89},
+  {code:"386",place:"Florida (Daytona Beach)",state:"FL",region:"Southeast",lat:29.21,lng:-81.02},
+  {code:"401",place:"Rhode Island",state:"RI",region:"Northeast",lat:41.82,lng:-71.41},
+  {code:"402",place:"Nebraska (Omaha/Lincoln)",state:"NE",region:"Midwest",lat:41.26,lng:-95.94},
+  {code:"404",place:"Georgia (Atlanta)",state:"GA",region:"Southeast",lat:33.75,lng:-84.39},
+  {code:"405",place:"Oklahoma (Oklahoma City)",state:"OK",region:"Southwest",lat:35.47,lng:-97.52},
+  {code:"406",place:"Montana",state:"MT",region:"West",lat:46.87,lng:-110.36},
+  {code:"407",place:"Florida (Orlando)",state:"FL",region:"Southeast",lat:28.54,lng:-81.38},
+  {code:"408",place:"California (San Jose)",state:"CA",region:"West",lat:37.34,lng:-121.89},
+  {code:"409",place:"Texas (Galveston/Beaumont)",state:"TX",region:"Southwest",lat:29.30,lng:-94.80},
+  {code:"410",place:"Maryland (Baltimore)",state:"MD",region:"Northeast",lat:39.29,lng:-76.61},
+  {code:"412",place:"Pennsylvania (Pittsburgh)",state:"PA",region:"Northeast",lat:40.44,lng:-80.00},
+  {code:"413",place:"Massachusetts (Springfield/western MA)",state:"MA",region:"Northeast",lat:42.10,lng:-72.59},
+  {code:"414",place:"Wisconsin (Milwaukee)",state:"WI",region:"Midwest",lat:43.04,lng:-87.91},
+  {code:"415",place:"California (San Francisco)",state:"CA",region:"West",lat:37.77,lng:-122.42},
+  {code:"417",place:"Missouri (Springfield/Joplin)",state:"MO",region:"Midwest",lat:37.21,lng:-93.29},
+  {code:"419",place:"Ohio (Toledo)",state:"OH",region:"Midwest",lat:41.65,lng:-83.54},
+  {code:"423",place:"Tennessee (Chattanooga)",state:"TN",region:"Southeast",lat:35.05,lng:-85.31},
+  {code:"424",place:"California (West LA overlay)",state:"CA",region:"West",lat:33.98,lng:-118.41},
+  {code:"425",place:"Washington (Bellevue/Eastside)",state:"WA",region:"West",lat:47.61,lng:-122.20},
+  {code:"430",place:"Texas (Tyler/Longview)",state:"TX",region:"Southwest",lat:32.35,lng:-95.30},
+  {code:"432",place:"Texas (Midland/Odessa)",state:"TX",region:"Southwest",lat:31.99,lng:-102.08},
+  {code:"434",place:"Virginia (Charlottesville/Lynchburg)",state:"VA",region:"Southeast",lat:38.03,lng:-78.48},
+  {code:"435",place:"Utah (outside Salt Lake City)",state:"UT",region:"West",lat:38.57,lng:-111.76},
+  {code:"440",place:"Ohio (east suburbs of Cleveland)",state:"OH",region:"Midwest",lat:41.56,lng:-81.48},
+  {code:"443",place:"Maryland (Baltimore overlay)",state:"MD",region:"Northeast",lat:39.29,lng:-76.61},
+  {code:"469",place:"Texas (Dallas overlay)",state:"TX",region:"Southwest",lat:32.78,lng:-96.80},
+  {code:"470",place:"Georgia (Atlanta overlay)",state:"GA",region:"Southeast",lat:33.75,lng:-84.39},
+  {code:"475",place:"Connecticut (overlay)",state:"CT",region:"Northeast",lat:41.18,lng:-73.19},
+  {code:"478",place:"Georgia (Macon)",state:"GA",region:"Southeast",lat:32.84,lng:-83.63},
+  {code:"479",place:"Arkansas (Fort Smith/Fayetteville)",state:"AR",region:"Southeast",lat:36.07,lng:-94.17},
+  {code:"480",place:"Arizona (Scottsdale/Mesa/Tempe)",state:"AZ",region:"Southwest",lat:33.49,lng:-111.93},
+  {code:"484",place:"Pennsylvania (eastern PA overlay)",state:"PA",region:"Northeast",lat:40.34,lng:-75.93},
+  {code:"501",place:"Arkansas (Little Rock)",state:"AR",region:"Southeast",lat:34.75,lng:-92.29},
+  {code:"502",place:"Kentucky (Louisville)",state:"KY",region:"Southeast",lat:38.25,lng:-85.76},
+  {code:"503",place:"Oregon (Portland/Salem)",state:"OR",region:"West",lat:45.52,lng:-122.68},
+  {code:"504",place:"Louisiana (New Orleans)",state:"LA",region:"Southeast",lat:29.95,lng:-90.07},
+  {code:"505",place:"New Mexico (Albuquerque)",state:"NM",region:"Southwest",lat:35.08,lng:-106.65},
+  {code:"507",place:"Minnesota (Rochester/Mankato)",state:"MN",region:"Midwest",lat:44.02,lng:-92.47},
+  {code:"508",place:"Massachusetts (Worcester/Cape Cod)",state:"MA",region:"Northeast",lat:42.26,lng:-71.80},
+  {code:"509",place:"Washington (Spokane)",state:"WA",region:"West",lat:47.66,lng:-117.43},
+  {code:"510",place:"California (Oakland/East Bay)",state:"CA",region:"West",lat:37.80,lng:-122.27},
+  {code:"512",place:"Texas (Austin)",state:"TX",region:"Southwest",lat:30.27,lng:-97.74},
+  {code:"513",place:"Ohio (Cincinnati)",state:"OH",region:"Midwest",lat:39.10,lng:-84.51},
+  {code:"515",place:"Iowa (Des Moines)",state:"IA",region:"Midwest",lat:41.59,lng:-93.62},
+  {code:"516",place:"New York (Nassau County/Long Island)",state:"NY",region:"Northeast",lat:40.73,lng:-73.59},
+  {code:"517",place:"Michigan (Lansing)",state:"MI",region:"Midwest",lat:42.73,lng:-84.56},
+  {code:"518",place:"New York (Albany)",state:"NY",region:"Northeast",lat:42.65,lng:-73.76},
+  {code:"520",place:"Arizona (Tucson)",state:"AZ",region:"Southwest",lat:32.22,lng:-110.97},
+  {code:"530",place:"California (Redding/Chico/Davis)",state:"CA",region:"West",lat:40.59,lng:-122.39},
+  {code:"531",place:"Nebraska (Omaha overlay)",state:"NE",region:"Midwest",lat:41.26,lng:-95.94},
+  {code:"534",place:"Wisconsin (Eau Claire overlay)",state:"WI",region:"Midwest",lat:44.81,lng:-91.50},
+  {code:"539",place:"Oklahoma (Tulsa overlay)",state:"OK",region:"Southwest",lat:36.15,lng:-95.99},
+  {code:"540",place:"Virginia (Roanoke/Blacksburg)",state:"VA",region:"Southeast",lat:37.27,lng:-79.94},
+  {code:"541",place:"Oregon (Eugene/Bend)",state:"OR",region:"West",lat:44.05,lng:-123.09},
+  {code:"551",place:"New Jersey (Jersey City overlay)",state:"NJ",region:"Northeast",lat:40.73,lng:-74.08},
+  {code:"559",place:"California (Fresno)",state:"CA",region:"West",lat:36.74,lng:-119.77},
+  {code:"561",place:"Florida (West Palm Beach)",state:"FL",region:"Southeast",lat:26.72,lng:-80.05},
+  {code:"562",place:"California (Long Beach)",state:"CA",region:"West",lat:33.77,lng:-118.19},
+  {code:"563",place:"Iowa (Davenport/Dubuque)",state:"IA",region:"Midwest",lat:41.52,lng:-90.58},
+  {code:"567",place:"Ohio (Toledo overlay)",state:"OH",region:"Midwest",lat:41.65,lng:-83.54},
+  {code:"570",place:"Pennsylvania (Scranton/Wilkes-Barre)",state:"PA",region:"Northeast",lat:41.41,lng:-75.66},
+  {code:"571",place:"Virginia (Northern Virginia overlay)",state:"VA",region:"Southeast",lat:38.88,lng:-77.17},
+  {code:"573",place:"Missouri (Columbia/Jefferson City)",state:"MO",region:"Midwest",lat:38.95,lng:-92.33},
+  {code:"574",place:"Indiana (South Bend/Elkhart)",state:"IN",region:"Midwest",lat:41.68,lng:-86.25},
+  {code:"580",place:"Oklahoma (Lawton/Enid)",state:"OK",region:"Southwest",lat:34.60,lng:-98.39},
+  {code:"585",place:"New York (Rochester)",state:"NY",region:"Northeast",lat:43.16,lng:-77.61},
+  {code:"586",place:"Michigan (Macomb County)",state:"MI",region:"Midwest",lat:42.67,lng:-82.93},
+  {code:"601",place:"Mississippi (Jackson)",state:"MS",region:"Southeast",lat:32.30,lng:-90.18},
+  {code:"602",place:"Arizona (Phoenix)",state:"AZ",region:"Southwest",lat:33.45,lng:-112.07},
+  {code:"603",place:"New Hampshire",state:"NH",region:"Northeast",lat:43.21,lng:-71.54},
+  {code:"605",place:"South Dakota",state:"SD",region:"Midwest",lat:43.55,lng:-99.90},
+  {code:"606",place:"Kentucky (eastern KY/Ashland)",state:"KY",region:"Southeast",lat:38.48,lng:-82.64},
+  {code:"607",place:"New York (Binghamton/Ithaca)",state:"NY",region:"Northeast",lat:42.10,lng:-76.18},
+  {code:"608",place:"Wisconsin (Madison)",state:"WI",region:"Midwest",lat:43.07,lng:-89.40},
+  {code:"609",place:"New Jersey (Trenton/Atlantic City)",state:"NJ",region:"Northeast",lat:40.22,lng:-74.76},
+  {code:"610",place:"Pennsylvania (eastern PA/Reading)",state:"PA",region:"Northeast",lat:40.34,lng:-75.93},
+  {code:"612",place:"Minnesota (Minneapolis)",state:"MN",region:"Midwest",lat:44.98,lng:-93.27},
+  {code:"614",place:"Ohio (Columbus)",state:"OH",region:"Midwest",lat:39.96,lng:-83.00},
+  {code:"615",place:"Tennessee (Nashville)",state:"TN",region:"Southeast",lat:36.16,lng:-86.78},
+  {code:"616",place:"Michigan (Grand Rapids)",state:"MI",region:"Midwest",lat:42.96,lng:-85.66},
+  {code:"617",place:"Massachusetts (Boston)",state:"MA",region:"Northeast",lat:42.36,lng:-71.06},
+  {code:"618",place:"Illinois (southern IL/Belleville)",state:"IL",region:"Midwest",lat:38.52,lng:-89.98},
+  {code:"619",place:"California (San Diego)",state:"CA",region:"West",lat:32.72,lng:-117.16},
+  {code:"620",place:"Kansas (southern KS)",state:"KS",region:"Midwest",lat:37.25,lng:-97.85},
+  {code:"623",place:"Arizona (Glendale/west Phoenix)",state:"AZ",region:"Southwest",lat:33.54,lng:-112.19},
+  {code:"626",place:"California (Pasadena/San Gabriel Valley)",state:"CA",region:"West",lat:34.15,lng:-118.14},
+  {code:"628",place:"California (San Francisco overlay)",state:"CA",region:"West",lat:37.77,lng:-122.42},
+  {code:"629",place:"Tennessee (Nashville overlay)",state:"TN",region:"Southeast",lat:36.16,lng:-86.78},
+  {code:"630",place:"Illinois (western Chicago suburbs)",state:"IL",region:"Midwest",lat:41.85,lng:-88.10},
+  {code:"631",place:"New York (Suffolk County/Long Island)",state:"NY",region:"Northeast",lat:40.79,lng:-73.10},
+  {code:"636",place:"Missouri (west St. Louis suburbs)",state:"MO",region:"Midwest",lat:38.59,lng:-90.56},
+  {code:"641",place:"Iowa (Mason City/Ottumwa)",state:"IA",region:"Midwest",lat:41.20,lng:-92.41},
+  {code:"646",place:"New York (Manhattan overlay)",state:"NY",region:"Northeast",lat:40.78,lng:-73.97},
+  {code:"650",place:"California (San Mateo/Palo Alto)",state:"CA",region:"West",lat:37.44,lng:-122.14},
+  {code:"651",place:"Minnesota (St. Paul)",state:"MN",region:"Midwest",lat:44.94,lng:-93.09},
+  {code:"657",place:"California (Orange County overlay)",state:"CA",region:"West",lat:33.84,lng:-117.86},
+  {code:"660",place:"Missouri (Sedalia/Warrensburg)",state:"MO",region:"Midwest",lat:38.70,lng:-93.23},
+  {code:"661",place:"California (Bakersfield/Santa Clarita)",state:"CA",region:"West",lat:35.37,lng:-119.02},
+  {code:"662",place:"Mississippi (Tupelo/Oxford)",state:"MS",region:"Southeast",lat:34.26,lng:-88.70},
+  {code:"667",place:"Maryland (Baltimore overlay)",state:"MD",region:"Northeast",lat:39.29,lng:-76.61},
+  {code:"669",place:"California (San Jose overlay)",state:"CA",region:"West",lat:37.34,lng:-121.89},
+  {code:"678",place:"Georgia (Atlanta overlay)",state:"GA",region:"Southeast",lat:33.75,lng:-84.39},
+  {code:"681",place:"West Virginia (overlay)",state:"WV",region:"Southeast",lat:38.35,lng:-81.63},
+  {code:"682",place:"Texas (Fort Worth overlay)",state:"TX",region:"Southwest",lat:32.75,lng:-97.33},
+  {code:"701",place:"North Dakota",state:"ND",region:"Midwest",lat:47.53,lng:-99.78},
+  {code:"702",place:"Nevada (Las Vegas)",state:"NV",region:"West",lat:36.17,lng:-115.14},
+  {code:"703",place:"Virginia (Northern Virginia)",state:"VA",region:"Southeast",lat:38.88,lng:-77.17},
+  {code:"704",place:"North Carolina (Charlotte)",state:"NC",region:"Southeast",lat:35.23,lng:-80.84},
+  {code:"706",place:"Georgia (Augusta/Columbus)",state:"GA",region:"Southeast",lat:33.47,lng:-82.01},
+  {code:"707",place:"California (Santa Rosa/Eureka)",state:"CA",region:"West",lat:38.44,lng:-122.71},
+  {code:"708",place:"Illinois (south Chicago suburbs)",state:"IL",region:"Midwest",lat:41.72,lng:-87.76},
+  {code:"712",place:"Iowa (Sioux City/Council Bluffs)",state:"IA",region:"Midwest",lat:42.50,lng:-96.40},
+  {code:"713",place:"Texas (Houston)",state:"TX",region:"Southwest",lat:29.76,lng:-95.36},
+  {code:"714",place:"California (Orange County/Anaheim)",state:"CA",region:"West",lat:33.84,lng:-117.86},
+  {code:"715",place:"Wisconsin (Eau Claire/Wausau)",state:"WI",region:"Midwest",lat:44.81,lng:-91.50},
+  {code:"716",place:"New York (Buffalo)",state:"NY",region:"Northeast",lat:42.89,lng:-78.88},
+  {code:"717",place:"Pennsylvania (Harrisburg/Lancaster)",state:"PA",region:"Northeast",lat:40.27,lng:-76.88},
+  {code:"718",place:"New York (Brooklyn/Queens/Bronx/Staten Island)",state:"NY",region:"Northeast",lat:40.65,lng:-73.95},
+  {code:"719",place:"Colorado (Colorado Springs)",state:"CO",region:"West",lat:38.83,lng:-104.82},
+  {code:"720",place:"Colorado (Denver overlay)",state:"CO",region:"West",lat:39.74,lng:-104.99},
+  {code:"724",place:"Pennsylvania (western PA outside Pittsburgh)",state:"PA",region:"Northeast",lat:40.50,lng:-80.17},
+  {code:"725",place:"Nevada (Las Vegas overlay)",state:"NV",region:"West",lat:36.17,lng:-115.14},
+  {code:"727",place:"Florida (St. Petersburg/Clearwater)",state:"FL",region:"Southeast",lat:27.77,lng:-82.64},
+  {code:"731",place:"Tennessee (Jackson)",state:"TN",region:"Southeast",lat:35.61,lng:-88.81},
+  {code:"732",place:"New Jersey (New Brunswick/Toms River)",state:"NJ",region:"Northeast",lat:40.49,lng:-74.45},
+  {code:"734",place:"Michigan (Ann Arbor)",state:"MI",region:"Midwest",lat:42.28,lng:-83.74},
+  {code:"737",place:"Texas (Austin overlay)",state:"TX",region:"Southwest",lat:30.27,lng:-97.74},
+  {code:"740",place:"Ohio (southeastern OH/Athens)",state:"OH",region:"Midwest",lat:39.33,lng:-82.10},
+  {code:"743",place:"North Carolina (Greensboro overlay)",state:"NC",region:"Southeast",lat:36.07,lng:-79.79},
+  {code:"747",place:"California (Glendale/Burbank overlay)",state:"CA",region:"West",lat:34.18,lng:-118.31},
+  {code:"754",place:"Florida (Fort Lauderdale overlay)",state:"FL",region:"Southeast",lat:26.12,lng:-80.14},
+  {code:"757",place:"Virginia (Norfolk/Virginia Beach)",state:"VA",region:"Southeast",lat:36.85,lng:-76.29},
+  {code:"760",place:"California (Oceanside/Palm Springs)",state:"CA",region:"West",lat:33.20,lng:-117.38},
+  {code:"762",place:"Georgia (Augusta overlay)",state:"GA",region:"Southeast",lat:33.47,lng:-82.01},
+  {code:"763",place:"Minnesota (Brooklyn Park/Plymouth)",state:"MN",region:"Midwest",lat:45.09,lng:-93.36},
+  {code:"765",place:"Indiana (Muncie/Lafayette)",state:"IN",region:"Midwest",lat:40.19,lng:-85.39},
+  {code:"769",place:"Mississippi (Jackson overlay)",state:"MS",region:"Southeast",lat:32.30,lng:-90.18},
+  {code:"770",place:"Georgia (Atlanta suburbs)",state:"GA",region:"Southeast",lat:33.95,lng:-84.22},
+  {code:"772",place:"Florida (Port St. Lucie/Vero Beach)",state:"FL",region:"Southeast",lat:27.29,lng:-80.35},
+  {code:"773",place:"Illinois (Chicago non-downtown)",state:"IL",region:"Midwest",lat:41.92,lng:-87.70},
+  {code:"774",place:"Massachusetts (south of Boston overlay)",state:"MA",region:"Northeast",lat:42.08,lng:-71.02},
+  {code:"775",place:"Nevada (Reno)",state:"NV",region:"West",lat:39.53,lng:-119.81},
+  {code:"779",place:"Illinois (Rockford overlay)",state:"IL",region:"Midwest",lat:42.27,lng:-89.09},
+  {code:"781",place:"Massachusetts (suburbs north/south of Boston)",state:"MA",region:"Northeast",lat:42.44,lng:-71.07},
+  {code:"785",place:"Kansas (Topeka/Lawrence)",state:"KS",region:"Midwest",lat:39.05,lng:-95.68},
+  {code:"786",place:"Florida (Miami overlay)",state:"FL",region:"Southeast",lat:25.76,lng:-80.19},
+  {code:"801",place:"Utah (Salt Lake City)",state:"UT",region:"West",lat:40.76,lng:-111.89},
+  {code:"802",place:"Vermont",state:"VT",region:"Northeast",lat:44.26,lng:-72.58},
+  {code:"803",place:"South Carolina (Columbia)",state:"SC",region:"Southeast",lat:34.00,lng:-81.03},
+  {code:"804",place:"Virginia (Richmond)",state:"VA",region:"Southeast",lat:37.54,lng:-77.44},
+  {code:"805",place:"California (Santa Barbara/San Luis Obispo)",state:"CA",region:"West",lat:34.42,lng:-119.70},
+  {code:"806",place:"Texas (Lubbock/Amarillo)",state:"TX",region:"Southwest",lat:33.58,lng:-101.85},
+  {code:"808",place:"Hawaii",state:"HI",region:"West",lat:21.31,lng:-157.86},
+  {code:"810",place:"Michigan (Flint)",state:"MI",region:"Midwest",lat:43.01,lng:-83.69},
+  {code:"812",place:"Indiana (Evansville/Bloomington)",state:"IN",region:"Midwest",lat:39.17,lng:-86.53},
+  {code:"813",place:"Florida (Tampa)",state:"FL",region:"Southeast",lat:27.95,lng:-82.46},
+  {code:"814",place:"Pennsylvania (Erie/State College)",state:"PA",region:"Northeast",lat:42.13,lng:-80.08},
+  {code:"815",place:"Illinois (Rockford/Joliet)",state:"IL",region:"Midwest",lat:42.27,lng:-89.09},
+  {code:"816",place:"Missouri (Kansas City)",state:"MO",region:"Midwest",lat:39.10,lng:-94.58},
+  {code:"817",place:"Texas (Fort Worth)",state:"TX",region:"Southwest",lat:32.75,lng:-97.33},
+  {code:"818",place:"California (Glendale/Burbank/San Fernando Valley)",state:"CA",region:"West",lat:34.18,lng:-118.31},
+  {code:"828",place:"North Carolina (Asheville)",state:"NC",region:"Southeast",lat:35.60,lng:-82.55},
+  {code:"830",place:"Texas (New Braunfels/Del Rio)",state:"TX",region:"Southwest",lat:29.70,lng:-98.12},
+  {code:"831",place:"California (Monterey/Santa Cruz)",state:"CA",region:"West",lat:36.60,lng:-121.89},
+  {code:"832",place:"Texas (Houston overlay)",state:"TX",region:"Southwest",lat:29.76,lng:-95.36},
+  {code:"843",place:"South Carolina (Charleston/Myrtle Beach)",state:"SC",region:"Southeast",lat:32.78,lng:-79.93},
+  {code:"845",place:"New York (Hudson Valley/Poughkeepsie)",state:"NY",region:"Northeast",lat:41.70,lng:-73.93},
+  {code:"847",place:"Illinois (north Chicago suburbs/Evanston)",state:"IL",region:"Midwest",lat:42.04,lng:-87.68},
+  {code:"848",place:"New Jersey (central NJ overlay)",state:"NJ",region:"Northeast",lat:40.49,lng:-74.45},
+  {code:"850",place:"Florida (Tallahassee/Pensacola)",state:"FL",region:"Southeast",lat:30.44,lng:-84.28},
+  {code:"856",place:"New Jersey (Camden/Cherry Hill)",state:"NJ",region:"Northeast",lat:39.93,lng:-75.02},
+  {code:"857",place:"Massachusetts (Boston overlay)",state:"MA",region:"Northeast",lat:42.36,lng:-71.06},
+  {code:"858",place:"California (San Diego north/La Jolla)",state:"CA",region:"West",lat:32.84,lng:-117.27},
+  {code:"859",place:"Kentucky (Lexington)",state:"KY",region:"Southeast",lat:38.04,lng:-84.50},
+  {code:"860",place:"Connecticut (Hartford)",state:"CT",region:"Northeast",lat:41.76,lng:-72.68},
+  {code:"862",place:"New Jersey (Newark overlay)",state:"NJ",region:"Northeast",lat:40.74,lng:-74.17},
+  {code:"863",place:"Florida (Lakeland/Winter Haven)",state:"FL",region:"Southeast",lat:28.04,lng:-81.95},
+  {code:"864",place:"South Carolina (Greenville/Spartanburg)",state:"SC",region:"Southeast",lat:34.85,lng:-82.40},
+  {code:"865",place:"Tennessee (Knoxville)",state:"TN",region:"Southeast",lat:35.96,lng:-83.92},
+  {code:"870",place:"Arkansas (Jonesboro/Pine Bluff)",state:"AR",region:"Southeast",lat:35.84,lng:-90.70},
+  {code:"878",place:"Pennsylvania (Pittsburgh overlay)",state:"PA",region:"Northeast",lat:40.44,lng:-80.00},
+  {code:"901",place:"Tennessee (Memphis)",state:"TN",region:"Southeast",lat:35.15,lng:-90.05},
+  {code:"903",place:"Texas (Tyler/Longview/Texarkana)",state:"TX",region:"Southwest",lat:32.35,lng:-95.30},
+  {code:"904",place:"Florida (Jacksonville)",state:"FL",region:"Southeast",lat:30.33,lng:-81.66},
+  {code:"906",place:"Michigan (Upper Peninsula)",state:"MI",region:"Midwest",lat:46.50,lng:-87.40},
+  {code:"907",place:"Alaska",state:"AK",region:"West",lat:61.22,lng:-149.90},
+  {code:"908",place:"New Jersey (Elizabeth/Plainfield)",state:"NJ",region:"Northeast",lat:40.66,lng:-74.22},
+  {code:"909",place:"California (Inland Empire/San Bernardino)",state:"CA",region:"West",lat:34.11,lng:-117.29},
+  {code:"910",place:"North Carolina (Fayetteville/Wilmington)",state:"NC",region:"Southeast",lat:35.05,lng:-78.88},
+  {code:"912",place:"Georgia (Savannah)",state:"GA",region:"Southeast",lat:32.08,lng:-81.09},
+  {code:"913",place:"Kansas (Kansas City area/Overland Park)",state:"KS",region:"Midwest",lat:38.98,lng:-94.67},
+  {code:"914",place:"New York (Westchester County)",state:"NY",region:"Northeast",lat:41.03,lng:-73.76},
+  {code:"915",place:"Texas (El Paso)",state:"TX",region:"Southwest",lat:31.76,lng:-106.49},
+  {code:"916",place:"California (Sacramento)",state:"CA",region:"West",lat:38.58,lng:-121.49},
+  {code:"917",place:"New York (NYC cell phones)",state:"NY",region:"Northeast",lat:40.71,lng:-74.01},
+  {code:"918",place:"Oklahoma (Tulsa)",state:"OK",region:"Southwest",lat:36.15,lng:-95.99},
+  {code:"919",place:"North Carolina (Raleigh)",state:"NC",region:"Southeast",lat:35.78,lng:-78.64},
+  {code:"920",place:"Wisconsin (Green Bay/Appleton)",state:"WI",region:"Midwest",lat:44.51,lng:-88.02},
+  {code:"925",place:"California (Contra Costa/Walnut Creek)",state:"CA",region:"West",lat:37.91,lng:-122.06},
+  {code:"928",place:"Arizona (Flagstaff/Yuma)",state:"AZ",region:"Southwest",lat:35.20,lng:-111.65},
+  {code:"929",place:"New York (NYC overlay)",state:"NY",region:"Northeast",lat:40.71,lng:-74.01},
+  {code:"931",place:"Tennessee (Clarksville/Cookeville)",state:"TN",region:"Southeast",lat:36.53,lng:-87.36},
+  {code:"936",place:"Texas (Nacogdoches/Huntsville)",state:"TX",region:"Southwest",lat:30.72,lng:-95.55},
+  {code:"937",place:"Ohio (Dayton)",state:"OH",region:"Midwest",lat:39.76,lng:-84.19},
+  {code:"938",place:"Alabama (Huntsville overlay)",state:"AL",region:"Southeast",lat:34.73,lng:-86.59},
+  {code:"940",place:"Texas (Denton/Wichita Falls)",state:"TX",region:"Southwest",lat:33.21,lng:-97.13},
+  {code:"941",place:"Florida (Sarasota/Bradenton)",state:"FL",region:"Southeast",lat:27.34,lng:-82.53},
+  {code:"947",place:"Michigan (Oakland County overlay)",state:"MI",region:"Midwest",lat:42.64,lng:-83.29},
+  {code:"949",place:"California (Irvine/South Orange County)",state:"CA",region:"West",lat:33.68,lng:-117.83},
+  {code:"951",place:"California (Riverside/Moreno Valley)",state:"CA",region:"West",lat:33.95,lng:-117.40},
+  {code:"952",place:"Minnesota (Bloomington/Eden Prairie)",state:"MN",region:"Midwest",lat:44.84,lng:-93.30},
+  {code:"954",place:"Florida (Fort Lauderdale)",state:"FL",region:"Southeast",lat:26.12,lng:-80.14},
+  {code:"956",place:"Texas (Laredo/McAllen)",state:"TX",region:"Southwest",lat:27.51,lng:-99.51},
+  {code:"959",place:"Connecticut (Hartford overlay)",state:"CT",region:"Northeast",lat:41.76,lng:-72.68},
+  {code:"970",place:"Colorado (Fort Collins/Grand Junction)",state:"CO",region:"West",lat:40.59,lng:-105.08},
+  {code:"971",place:"Oregon (Portland overlay)",state:"OR",region:"West",lat:45.52,lng:-122.68},
+  {code:"972",place:"Texas (Dallas suburbs)",state:"TX",region:"Southwest",lat:32.95,lng:-96.73},
+  {code:"973",place:"New Jersey (Newark/Paterson)",state:"NJ",region:"Northeast",lat:40.74,lng:-74.17},
+  {code:"978",place:"Massachusetts (north of Boston/Lowell)",state:"MA",region:"Northeast",lat:42.63,lng:-71.32},
+  {code:"979",place:"Texas (College Station/Bryan)",state:"TX",region:"Southwest",lat:30.63,lng:-96.33},
+  {code:"980",place:"North Carolina (Charlotte overlay)",state:"NC",region:"Southeast",lat:35.23,lng:-80.84},
+  {code:"984",place:"North Carolina (Raleigh overlay)",state:"NC",region:"Southeast",lat:35.78,lng:-78.64},
+  {code:"985",place:"Louisiana (Houma/Slidell)",state:"LA",region:"Southeast",lat:29.60,lng:-90.72}
+];
+
+// Game state
+let mode = 'code-to-place';
+let regionFilter = 'all';
+let currentQuestion = null;
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+let total = 0;
+let answered = false;
+let map = null;
+let marker = null;
+
+// DOM elements
+const scoreEl = document.getElementById('score');
+const streakEl = document.getElementById('streak');
+const totalEl = document.getElementById('total');
+const pctEl = document.getElementById('pct');
+const questionArea = document.getElementById('question-area');
+const choicesEl = document.getElementById('choices');
+const feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('next-btn');
+const regionSelect = document.getElementById('region-filter');
+const mapContainer = document.getElementById('map-container');
+const mapLabel = document.getElementById('map-label');
+
+// Initialize Leaflet map
+function initMap() {
+  map = L.map('map', {
+    zoomControl: false,
+    attributionControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    touchZoom: false
+  }).setView([39.8, -98.6], 4);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 12
+  }).addTo(map);
+  L.control.attribution({prefix: false}).addAttribution('&copy; <a href="https://openstreetmap.org">OSM</a>').addTo(map);
+}
+
+function showMap(lat, lng, label) {
+  mapContainer.classList.add('visible');
+  if (!map) initMap();
+
+  // Remove old marker
+  if (marker) map.removeLayer(marker);
+
+  const customIcon = L.divIcon({
+    className: 'custom-pin',
+    html: '<div style="width:14px;height:14px;background:#6366f1;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+  });
+
+  marker = L.marker([lat, lng], {icon: customIcon}).addTo(map);
+
+  // For Hawaii/Alaska zoom out more, otherwise zoom to 6
+  const isRemote = (lat < 25 || lat > 55 || lng < -130);
+  const zoom = isRemote ? 4 : 6;
+  map.setView([lat, lng], zoom);
+
+  mapLabel.textContent = label;
+
+  // Need to invalidate size since container was hidden
+  setTimeout(() => map.invalidateSize(), 50);
+}
+
+function hideMap() {
+  mapContainer.classList.remove('visible');
+}
+
+// Mode toggle
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    resetGame();
+  });
+});
+
+regionSelect.addEventListener('change', () => {
+  regionFilter = regionSelect.value;
+  resetGame();
+});
+
+nextBtn.addEventListener('click', () => newQuestion());
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (answered && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault();
+    newQuestion();
+    return;
+  }
+  if (!answered && currentQuestion) {
+    const num = parseInt(e.key);
+    if (num >= 1 && num <= 4) {
+      const btns = choicesEl.querySelectorAll('.choice-btn');
+      if (btns[num - 1]) btns[num - 1].click();
+    }
+  }
+});
+
+function getFilteredCodes() {
+  if (regionFilter === 'all') return AREA_CODES;
+  return AREA_CODES.filter(ac => ac.region === regionFilter);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickRandom(arr, n) {
+  return shuffle(arr).slice(0, n);
+}
+
+function newQuestion() {
+  answered = false;
+  feedbackEl.textContent = '';
+  feedbackEl.className = 'feedback';
+  nextBtn.classList.remove('visible');
+  hideMap();
+
+  const pool = getFilteredCodes();
+  if (pool.length < 4) {
+    choicesEl.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#64648c;">Not enough area codes in this region. Try "All US".</p>';
+    return;
+  }
+
+  const correct = pool[Math.floor(Math.random() * pool.length)];
+  const wrongPool = pool.filter(ac => ac.state !== correct.state);
+  const fallbackPool = pool.filter(ac => ac.code !== correct.code);
+  const sourcePool = wrongPool.length >= 3 ? wrongPool : fallbackPool;
+  const wrongs = pickRandom(sourcePool.filter(ac => ac.code !== correct.code), 3);
+  const options = shuffle([correct, ...wrongs]);
+
+  currentQuestion = { correct, options };
+
+  if (mode === 'code-to-place') {
+    questionArea.innerHTML = `
+      <div class="area-code">(${correct.code})</div>
+      <div class="question-label">Where is this area code?</div>
+    `;
+    choicesEl.innerHTML = options.map((o, i) =>
+      `<button class="choice-btn" data-code="${o.code}"><span style="opacity:0.4;font-size:0.75rem;">${i+1}. </span>${o.place}</button>`
+    ).join('');
+  } else {
+    questionArea.innerHTML = `
+      <div class="location-prompt">${correct.place}</div>
+      <div class="question-label">What is the area code?</div>
+    `;
+    choicesEl.innerHTML = options.map((o, i) =>
+      `<button class="choice-btn" data-code="${o.code}"><span style="opacity:0.4;font-size:0.75rem;">${i+1}. </span>(${o.code})</button>`
+    ).join('');
+  }
+
+  choicesEl.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleAnswer(btn));
+  });
+}
+
+function handleAnswer(btn) {
+  if (answered) return;
+  answered = true;
+
+  const selectedCode = btn.dataset.code;
+  const correct = currentQuestion.correct;
+  const isCorrect = selectedCode === correct.code;
+
+  if (isCorrect) {
+    score++;
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+    btn.classList.add('correct');
+    feedbackEl.textContent = 'Correct!';
+    feedbackEl.className = 'feedback correct-fb';
+  } else {
+    streak = 0;
+    btn.classList.add('wrong');
+    feedbackEl.textContent = `Nope! It's ${correct.place} (${correct.code})`;
+    feedbackEl.className = 'feedback wrong-fb';
+    choicesEl.querySelectorAll('.choice-btn').forEach(b => {
+      if (b.dataset.code === correct.code) b.classList.add('reveal');
+    });
+  }
+
+  total++;
+  choicesEl.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  updateStats();
+
+  // Show map with pin on the correct location
+  showMap(correct.lat, correct.lng, `(${correct.code}) — ${correct.place}`);
+
+  nextBtn.classList.add('visible');
+}
+
+function updateStats() {
+  scoreEl.textContent = score;
+  streakEl.textContent = streak;
+  totalEl.textContent = total;
+  pctEl.textContent = total === 0 ? '0%' : Math.round((score / total) * 100) + '%';
+}
+
+function resetGame() {
+  score = 0;
+  streak = 0;
+  total = 0;
+  updateStats();
+  newQuestion();
+}
+
+// Start
+newQuestion();
+</script>
+</body>
+</html>
